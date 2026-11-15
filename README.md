@@ -45,7 +45,7 @@ installed together.
 
 ## Install
 
-Download `m3-design-review.zip` from the latest GitHub Release of `<USER>/<REPO>`, or build it yourself
+Download `m3-design-review.zip` from the latest GitHub Release of `sbk-jdm/m3-design-review`, or build it yourself
 (see `maintenance/UPDATING.md`). The ZIP's root is the folder `m3-design-review/`, which contains `SKILL.md`.
 
 ### claude.ai
