@@ -4,8 +4,8 @@
    * Read-only measurement of a rendered page for a Material Design 3 review.
    * Evaluate in the page context: Playwright page.evaluate(source[, options]), a browser-automation JS tool,
    * or DevTools: paste `(<file contents>)()` into the console.
-   * Dependency-free. Sends nothing anywhere. Does not change the DOM or styles; the only side effect is a transient
-   * element.focus() during the focus check, after which the previously focused element is restored.
+   * Dependency-free. Sends nothing anywhere. Does not change the DOM or styles and does not scroll; the only side
+   * effect is a transient element.focus() during the focus check, after which the previously focused element is restored.
    * Returns a JSON-serializable object. Field meanings and limits: references/measurement.md.
    */
   'use strict';
@@ -15,6 +15,10 @@
   var MAX_FOCUS = opts.maxFocus || 80;      // max elements focused in the focus check
   var TARGET = opts.minTarget || 48;        // CSS px (1dp = 1 CSS px on the web)
   var MIN_TEXT = opts.minTextPx || 12;      // CSS px
+  var HIT_SCAN = opts.hitScan !== false;    // effective hit areas (::before/::after geometry and a hit-test probe)
+  var MAX_PROBE = opts.maxProbe === undefined ? 300 : opts.maxProbe; // max targets probed with elementFromPoint
+  var EXPECT_W = typeof opts.expectWidth === 'number' ? opts.expectWidth : null;
+  var NON_TEXT_SEL = Array.isArray(opts.nonTextSelectors) ? opts.nonTextSelectors : [];
   var t0 = Date.now();
   var doc = document;
   var root = doc.documentElement;
@@ -202,6 +206,132 @@
     var hasGlyph = !!el.querySelector('svg, img, i, [class*="icon" i], [class*="material-symbols" i]');
     return hasGlyph && t.length <= 30 && !/\s/.test((el.textContent || '').trim());
   }
+  function norm(s) { return String(s || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim(); }
+  function pxv(v) { var n = parseFloat(v); return isFinite(n) ? n : NaN; }
+  // exposed to assistive tech and rendered (sr-only boxes count; display:none, visibility:hidden, aria-hidden do not)
+  function exposed(el) {
+    var cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.visibility === 'collapse') return false;
+    if (typeof el.checkVisibility === 'function' && !el.checkVisibility({ visibilityProperty: true })) return false;
+    if (el.closest('[aria-hidden="true"]')) return false;
+    return el.getClientRects().length > 0;
+  }
+  // visible text of a control: rendered text nodes, skipping icon-font glyphs and visually hidden text
+  var ICON_RE = /(^|[\s_-])(icon|icons|material-symbols[\w-]*|material-icons[\w-]*|symbol)($|[\s_-])/i;
+  function visibleTextOf(el) {
+    var out = '', w = doc.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n, memo = new Map();
+    function skip(p) {
+      if (memo.has(p)) return memo.get(p);
+      var r = false;
+      for (var c = p; c && c !== el.parentElement; c = c.parentElement) {
+        var cl = c.getAttribute('class') || '';
+        var s = getComputedStyle(c);
+        if (ICON_RE.test(cl) || /material (icons|symbols)/i.test(s.fontFamily) ||
+            s.display === 'none' || s.visibility === 'hidden' || (c !== el && visuallyHidden(c, s))) { r = true; break; }
+      }
+      memo.set(p, r); return r;
+    }
+    while ((n = w.nextNode())) if (n.nodeValue.trim() && n.parentElement && !skip(n.parentElement)) out += ' ' + n.nodeValue;
+    return out.replace(/\s+/g, ' ').trim();
+  }
+
+  // ---------- effective hit area ----------
+  function rectOf(r) { return { l: r.left, t: r.top, r: r.right, b: r.bottom }; }
+  function paddingBox(e, s) {
+    var r = e.getBoundingClientRect();
+    return {
+      l: r.left + (pxv(s.borderLeftWidth) || 0) - e.scrollLeft, t: r.top + (pxv(s.borderTopWidth) || 0) - e.scrollTop,
+      r: r.right - (pxv(s.borderRightWidth) || 0) - e.scrollLeft, b: r.bottom - (pxv(s.borderBottomWidth) || 0) - e.scrollTop,
+      w: e.clientWidth, h: e.clientHeight
+    };
+  }
+  function makesCB(s) { // establishes a containing block for absolutely positioned descendants
+    return s.position !== 'static' || (s.transform && s.transform !== 'none') || (s.filter && s.filter !== 'none') ||
+      (s.perspective && s.perspective !== 'none') || /\b(layout|paint|strict|content)\b/.test(s.contain || '') ||
+      /\b(transform|filter|perspective)\b/.test(s.willChange || '') ||
+      (s.containerType && s.containerType !== 'normal');
+  }
+  function containingBlock(el, s) {
+    for (var cur = el, depth = 0; cur && cur.nodeType === 1 && depth < 60; depth++) {
+      if (makesCB(s)) {
+        var pb = paddingBox(cur, s);
+        // clientWidth excludes scrollbars; inline boxes have clientWidth 0, keep the rect then
+        if (pb.w > 0) pb.r = pb.l + pb.w;
+        if (pb.h > 0) pb.b = pb.t + pb.h;
+        return { el: cur, box: pb };
+      }
+      cur = cur.parentElement; if (cur) s = getComputedStyle(cur);
+    }
+    return { el: null, box: { l: -window.scrollX, t: -window.scrollY, r: -window.scrollX + root.clientWidth, b: -window.scrollY + root.clientHeight } };
+  }
+  function parseMatrix(t) {
+    if (!t || t === 'none') return null;
+    var m = t.match(/^matrix(3d)?\(([^)]+)\)$/); if (!m) return null;
+    var v = m[2].split(',').map(parseFloat);
+    return m[1] ? [v[0], v[1], v[4], v[5], v[12], v[13]] : v;
+  }
+  function pseudoRect(el, which, elCS) {
+    var ps; try { ps = getComputedStyle(el, which); } catch (e) { return null; }
+    if (!ps || !ps.content || ps.content === 'none' || ps.content === 'normal') return null;
+    if (ps.display === 'none' || ps.visibility !== 'visible' || ps.pointerEvents === 'none') return null;
+    if (ps.position !== 'absolute') return null; // in-flow pseudo-elements sit inside the box; fixed ones are skipped
+    var cb = containingBlock(el, elCS);
+    var W = pxv(ps.width), H = pxv(ps.height); if (!isFinite(W) || !isFinite(H)) return null;
+    if (ps.boxSizing !== 'border-box') {
+      W += (pxv(ps.paddingLeft) || 0) + (pxv(ps.paddingRight) || 0) + (pxv(ps.borderLeftWidth) || 0) + (pxv(ps.borderRightWidth) || 0);
+      H += (pxv(ps.paddingTop) || 0) + (pxv(ps.paddingBottom) || 0) + (pxv(ps.borderTopWidth) || 0) + (pxv(ps.borderBottomWidth) || 0);
+    }
+    var L = pxv(ps.left), R = pxv(ps.right), T = pxv(ps.top), B = pxv(ps.bottom);
+    var x1 = isFinite(L) ? cb.box.l + L + (pxv(ps.marginLeft) || 0) : (isFinite(R) ? cb.box.r - R - (pxv(ps.marginRight) || 0) - W : NaN);
+    var y1 = isFinite(T) ? cb.box.t + T + (pxv(ps.marginTop) || 0) : (isFinite(B) ? cb.box.b - B - (pxv(ps.marginBottom) || 0) - H : NaN);
+    if (!isFinite(x1) || !isFinite(y1)) return null;
+    var r = { l: x1, t: y1, r: x1 + W, b: y1 + H };
+    var m = parseMatrix(ps.transform);
+    if (m) {
+      var o = (ps.transformOrigin || '').split(' ').map(parseFloat), ox = r.l + (o[0] || 0), oy = r.t + (o[1] || 0);
+      var xs = [], ys = [];
+      [[r.l, r.t], [r.r, r.t], [r.l, r.b], [r.r, r.b]].forEach(function (p) {
+        var dx = p[0] - ox, dy = p[1] - oy;
+        xs.push(ox + m[0] * dx + m[2] * dy + m[4]); ys.push(oy + m[1] * dx + m[3] * dy + m[5]);
+      });
+      r = { l: Math.min.apply(null, xs), t: Math.min.apply(null, ys), r: Math.max.apply(null, xs), b: Math.max.apply(null, ys) };
+    }
+    // clipped by overflow on the containing block and its ancestors (body and html propagate to the viewport)
+    for (var cur = cb.el, d = 0; cur && cur !== doc.body && cur !== root && d < 40; cur = cur.parentElement, d++) {
+      var s = getComputedStyle(cur);
+      if (s.overflowX === 'visible' && s.overflowY === 'visible') continue;
+      var pb = paddingBox(cur, s); pb.l += cur.scrollLeft; pb.r += cur.scrollLeft; pb.t += cur.scrollTop; pb.b += cur.scrollTop;
+      if (s.overflowX !== 'visible') { r.l = Math.max(r.l, pb.l); r.r = Math.min(r.r, pb.r); }
+      if (s.overflowY !== 'visible') { r.t = Math.max(r.t, pb.t); r.b = Math.min(r.b, pb.b); }
+    }
+    if (r.r - r.l <= 0 || r.b - r.t <= 0) return null;
+    return r;
+  }
+  function owns(el, n) {
+    if (!n) return false;
+    if (n === el || el.contains(n)) return true;
+    if (el.labels) for (var i = 0; i < el.labels.length; i++) if (el.labels[i] === n || el.labels[i].contains(n)) return true;
+    return false;
+  }
+  // Walks outward from each edge of the box along the center lines while elementFromPoint still hits the element.
+  function probeHit(el, b) {
+    var vw = root.clientWidth, vh = window.innerHeight;
+    var cx = (b.l + b.r) / 2, cy = (b.t + b.b) / 2;
+    if (cx < 0 || cy < 0 || cx >= vw || cy >= vh) return { status: 'offscreen' };
+    if (!owns(el, doc.elementFromPoint(cx, cy))) return { status: 'covered' };
+    var limited = false;
+    function ext(dx, dy, x0, y0) {
+      for (var d = 1; d <= TARGET; d++) {
+        var x = x0 + dx * (d - 0.5), y = y0 + dy * (d - 0.5);
+        if (x < 0 || y < 0 || x >= vw || y >= vh) { limited = true; return d - 1; }
+        if (!owns(el, doc.elementFromPoint(x, y))) return d - 1;
+      }
+      return TARGET;
+    }
+    var w = (b.r - b.l) + ext(-1, 0, b.l, cy) + ext(1, 0, b.r, cy);
+    var h = (b.b - b.t) + ext(0, -1, cx, b.t) + ext(0, 1, cx, b.b);
+    return { status: limited ? 'limited' : 'ok', w: w, h: h };
+  }
 
   // ---------- collect elements ----------
   var INTERACTIVE = 'a[href], button, input:not([type="hidden"]), select, textarea, summary, ' +
@@ -212,18 +342,21 @@
   var scanned = Math.min(all.length, MAX_EL);
 
   var out = {
-    tool: 'm3-design-review/measure.js', version: '1.0.0',
+    tool: 'm3-design-review/measure.js', version: '1.1.0',
     url: location.origin === 'null' ? location.protocol : location.origin + location.pathname,
     viewport: {
       innerWidth: window.innerWidth, innerHeight: window.innerHeight,
       clientWidth: root.clientWidth, devicePixelRatio: window.devicePixelRatio,
       prefersDark: window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches,
       prefersReducedMotion: window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches,
-      rootFontSizePx: parseFloat(getComputedStyle(root).fontSize)
+      rootFontSizePx: parseFloat(getComputedStyle(root).fontSize),
+      metaViewport: null, expectWidth: EXPECT_W, mismatch: false
     },
+    warnings: [],
     document: {},
     smallTargets: list(), smallText: list(), contrastFailures: list(), contrastUnresolved: list(),
     unnamedControls: list(), imagesWithoutAlt: list(), focusNotVisible: list(), focusWeak: list(),
+    truncated: list(), nonTextContrast: list(), layoutOverflow: null, labelInName: list(), ariaConflicts: list(),
     customProperties: { count: 0, truncated: false, items: [] },
     fontFamilies: [], radiusHistogram: [], motion: {}, stats: {}, notes: []
   };
@@ -240,12 +373,31 @@
     zoomDisabled: vmc !== null && (/user-scalable\s*=\s*(no|0)/i.test(vmc) ||
       /maximum-scale\s*=\s*(0?\.\d+|1(\.0+)?)(?![\d.])/i.test(vmc)),
     colorSchemeMeta: (doc.querySelector('meta[name="color-scheme"]') || { getAttribute: function () { return null; } }).getAttribute('content'),
-    h1Count: doc.querySelectorAll('h1').length,
+    h1Count: 0, h1CountAll: doc.querySelectorAll('h1').length, headingCount: 0, headingSkips: 0, headingOutline: [],
     mainCount: doc.querySelectorAll('main, [role="main"]').length
   };
+  out.viewport.metaViewport = vmc;
+  if (vm === null) out.warnings.push('viewport-meta-missing');
+  if (EXPECT_W !== null && Math.abs(window.innerWidth - EXPECT_W) > 1) {
+    out.viewport.mismatch = true; out.warnings.push('viewport-width-mismatch');
+  }
+  // headings exposed to assistive tech (hidden views do not count)
+  var prevLevel = 0, hs = doc.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]');
+  for (var hi = 0; hi < hs.length && hi < MAX_EL; hi++) {
+    var hEl = hs[hi];
+    if (!exposed(hEl)) continue;
+    var lvl = /^H[1-6]$/.test(hEl.tagName) && !hEl.getAttribute('role') ? +hEl.tagName[1] : (parseInt(hEl.getAttribute('aria-level'), 10) || 2);
+    out.document.headingCount++;
+    if (lvl === 1) out.document.h1Count++;
+    if (prevLevel && lvl > prevLevel + 1) out.document.headingSkips++;
+    prevLevel = lvl;
+    if (out.document.headingOutline.length < CAP) out.document.headingOutline.push({ level: lvl, text: textOf(hEl, 40) });
+  }
 
   var fontCount = {}, radiusCount = {}, animated = 0, transitioned = 0, textChecked = 0, exemptDisabled = 0;
-  var interactive = [];
+  var interactive = [], targetCands = [];
+  var overflowItems = { count: 0, truncated: false, items: [] };
+  function ownTextOf(e) { var t = ''; for (var c = e.firstChild; c; c = c.nextSibling) if (c.nodeType === 3) t += c.nodeValue; return t.trim(); }
   var interactiveSet = new Set(doc.body ? doc.body.querySelectorAll(INTERACTIVE) : []);
 
   for (var i = 0; i < scanned; i++) {
@@ -283,12 +435,39 @@
         }
       }
       if (!hidden && (w < TARGET || h < TARGET)) {
-        var inline = el.tagName === 'A' && cs.display === 'inline' && el.parentElement &&
-          (el.parentElement.textContent || '').trim().length > (el.textContent || '').trim().length + 10;
-        push(out.smallTargets, {
-          selector: sel(el), text: textOf(el, 30), width: r1(w), height: r1(h),
-          hitAreaVia: via, inlineTextLink: inline || undefined, disabled: isDisabled(el) || undefined
+        targetCands.push({ el: el, cs: cs, rect: rect, w: w, h: h, via: via });
+      }
+    }
+
+    // truncation and clipped overflow (only boxes that clip or clamp)
+    if (!hidden && (cs.overflowX !== 'visible' || cs.overflowY !== 'visible')) {
+      var clamp = cs.webkitLineClamp || cs.getPropertyValue('-webkit-line-clamp') || cs.getPropertyValue('line-clamp');
+      var txtAll = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      var overX = el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1;
+      var overY = el.clientHeight > 0 && el.scrollHeight > el.clientHeight + 1;
+      var clipX = cs.overflowX === 'hidden' || cs.overflowX === 'clip';
+      var clipY = cs.overflowY === 'hidden' || cs.overflowY === 'clip';
+      var tvia = null;
+      if (clamp && clamp !== 'none' && overY) tvia = 'line-clamp';
+      else if (cs.textOverflow === 'ellipsis' && overX) tvia = 'ellipsis';
+      else if (clipX && overX && ownTextOf(el) && /nowrap|pre/.test(cs.whiteSpace)) tvia = 'clip';
+      if (tvia && txtAll) {
+        var ctl = el.closest(INTERACTIVE) || el;
+        var hidAnc = !!el.closest('[aria-hidden="true"]');
+        push(out.truncated, {
+          selector: sel(el), text: txtAll.slice(0, 60), via: tvia,
+          hasTitle: !!(el.closest('[title]') && el.closest('[title]').getAttribute('title').trim()),
+          nameHasFullText: !hidAnc && norm(accName(ctl)).indexOf(norm(txtAll)) >= 0
         });
+      }
+      if (txtAll && tvia !== 'ellipsis' && tvia !== 'line-clamp' && ((clipX && overX) || (clipY && overY))) {
+        overflowItems.count++;
+        if (overflowItems.items.length < CAP) {
+          overflowItems.items.push({
+            selector: sel(el), axis: clipX && overX ? (clipY && overY ? 'both' : 'x') : 'y',
+            scrollWidth: el.scrollWidth, clientWidth: el.clientWidth, scrollHeight: el.scrollHeight, clientHeight: el.clientHeight
+          });
+        } else overflowItems.truncated = true;
       }
     }
 
@@ -338,6 +517,192 @@
     }
   }
   if (all.length > MAX_EL) out.notes.push('Scanned the first ' + MAX_EL + ' of ' + all.length + ' elements.');
+
+  // ---------- small targets: effective hit area ----------
+  var probed = 0, probeCovered = 0, probeOffscreen = 0;
+  targetCands.forEach(function (c) {
+    var el = c.el, b = rectOf(c.rect), hit = b, via = c.via || 'box';
+    if (c.via === 'label') {
+      el.labels && Array.prototype.forEach.call(el.labels, function (lb) {
+        var lr = lb.getBoundingClientRect();
+        if (lr.width * lr.height >= c.w * c.h - 0.5) hit = rectOf(lr);
+      });
+    }
+    var hw = c.w, hh = c.h, covered, probeStatus;
+    if (HIT_SCAN) {
+      var u = { l: hit.l, t: hit.t, r: hit.r, b: hit.b }, grew = false;
+      ['::before', '::after'].forEach(function (w) {
+        var pr = pseudoRect(el, w, c.cs); if (!pr) return;
+        var n = { l: Math.min(u.l, pr.l), t: Math.min(u.t, pr.t), r: Math.max(u.r, pr.r), b: Math.max(u.b, pr.b) };
+        if (n.r - n.l > u.r - u.l + 0.5 || n.b - n.t > u.b - u.t + 0.5) grew = true;
+        u = n;
+      });
+      hw = u.r - u.l; hh = u.b - u.t;
+      if (grew) via = 'pseudo';
+      if (probed < MAX_PROBE) {
+        probed++;
+        var p = probeHit(el, b);
+        probeStatus = p.status;
+        if (p.status === 'covered') { probeCovered++; covered = true; }
+        else if (p.status === 'offscreen') probeOffscreen++;
+        else if (p.status === 'ok' && (Math.abs(p.w - hw) > 1 || Math.abs(p.h - hh) > 1)) {
+          if (Math.abs(p.w - hw) > 1) hw = p.w;
+          if (Math.abs(p.h - hh) > 1) hh = p.h;
+          via = 'probe';
+        }
+      }
+    }
+    if (hw < TARGET || hh < TARGET) {
+      var inline = el.tagName === 'A' && c.cs.display === 'inline' && el.parentElement &&
+        (el.parentElement.textContent || '').trim().length > (el.textContent || '').trim().length + 10;
+      push(out.smallTargets, {
+        selector: sel(el), text: textOf(el, 30), width: r1(hw), height: r1(hh),
+        visualWidth: r1(c.rect.width), visualHeight: r1(c.rect.height), hitWidth: r1(hw), hitHeight: r1(hh),
+        hitAreaVia: via, probe: probeStatus, covered: covered || undefined,
+        inlineTextLink: inline || undefined, disabled: isDisabled(el) || undefined
+      });
+    }
+  });
+  if (HIT_SCAN && probeOffscreen) out.notes.push(probeOffscreen + ' small-target candidate(s) were outside the viewport: hit area from geometry only (no probe).');
+  if (HIT_SCAN && targetCands.length > MAX_PROBE) out.notes.push('Hit-test probe limited to ' + MAX_PROBE + ' of ' + targetCands.length + ' candidates.');
+
+  // ---------- non-text contrast (fields, outlined controls, nonTextSelectors) ----------
+  var FIELD_TYPES = /^(|text|search|email|url|tel|password|number|date|datetime-local|month|week|time)$/;
+  function isField(el) {
+    var t = el.tagName, r = (el.getAttribute('role') || '').toLowerCase();
+    if (t === 'TEXTAREA' || t === 'SELECT') return true;
+    if (t === 'INPUT') return FIELD_TYPES.test((el.getAttribute('type') || '').toLowerCase());
+    return /^(textbox|combobox|searchbox|spinbutton)$/.test(r) || el.getAttribute('contenteditable') === 'true';
+  }
+  var ntChecked = 0, ntUnresolved = 0;
+  function sideBorders(cs, under) { // composited color of each drawn border side
+    var res = [];
+    ['Top', 'Right', 'Bottom', 'Left'].forEach(function (S) {
+      var w = pxv(cs['border' + S + 'Width']), st = cs['border' + S + 'Style'], c = parseColor(cs['border' + S + 'Color']);
+      if (!(w >= 0.5) || st === 'none' || st === 'hidden' || !c || c.a === 0) return;
+      res.push(c.a < 1 ? over(c, under) : c);
+    });
+    return res;
+  }
+  var prevActiveEarly = doc.activeElement;
+  interactive.forEach(function (el) {
+    if (el === prevActiveEarly || isDisabled(el)) return;
+    var cs = getComputedStyle(el);
+    if (visuallyHidden(el, cs)) return;
+    var t = el.tagName, type = (el.getAttribute('type') || '').toLowerCase();
+    if (t === 'INPUT' && /^(checkbox|radio|range|color|file)$/.test(type) && cs.appearance !== 'none') return;
+    var field = isField(el);
+    var behind = effectiveBg(el.parentElement || el);
+    if (!behind.color) { ntUnresolved++; return; }
+    var bg = behind.color, fill = parseColor(cs.backgroundColor);
+    var fillC = fill && fill.a > 0 ? over(fill, bg) : bg;
+    var clipBorder = cs.backgroundClip === 'border-box' ? fillC : bg;
+    var parts = [];
+    sideBorders(cs, clipBorder).forEach(function (c) { parts.push({ part: 'border', c: c }); });
+    if (cs.outlineStyle !== 'none' && cs.outlineStyle !== 'auto' && pxv(cs.outlineWidth) >= 0.5) {
+      var oc = parseColor(cs.outlineColor);
+      if (oc && oc.a > 0) parts.push({ part: 'outline', c: oc.a < 1 ? over(oc, bg) : oc });
+    }
+    if (!field && !parts.length) return; // filled or text-only controls: the label identifies them (see measurement.md)
+    ntChecked++;
+    // the component is identifiable if its fill or any drawn boundary reaches 3:1 against what is behind it
+    var fillRatio = ratio(fillC, bg), strongest = null;
+    parts.forEach(function (p) { p.ratio = ratio(p.c, bg); if (!strongest || p.ratio > strongest.ratio) strongest = p; });
+    if (Math.max(fillRatio, strongest ? strongest.ratio : 0) < 3) {
+      var best = strongest || { part: 'fill', ratio: fillRatio, c: fillC }; // report the boundary the design relies on
+      push(out.nonTextContrast, {
+        selector: sel(el), part: best.part, ratio: r2(best.ratio), required: 3, kind: field ? 'field' : 'control',
+        color: hex(best.c), background: hex(bg), fillRatio: r2(fillRatio), note: behind.note || undefined
+      });
+    }
+  });
+  var ntPrev = new Map(), ntSeen = 0;
+  NON_TEXT_SEL.forEach(function (q) {
+    var nodes; try { nodes = doc.querySelectorAll(q); } catch (e) { out.notes.push('Invalid nonTextSelectors entry: ' + String(q).slice(0, 60)); return; }
+    for (var k = 0; k < nodes.length && ntSeen < MAX_EL; k++, ntSeen++) {
+      var el = nodes[k];
+      if (!visible(el)) continue;
+      var cs = getComputedStyle(el), c, svg = typeof SVGElement !== 'undefined' && el instanceof SVGElement;
+      if (svg) {
+        var f = cs.fill && cs.fill !== 'none' ? cs.fill : cs.stroke;
+        c = /^url\(/.test(f || '') ? null : parseColor(f);
+        if (c) c.a *= (parseFloat(cs.fill && cs.fill !== 'none' ? cs.fillOpacity : cs.strokeOpacity) || 1);
+      } else c = parseColor(cs.backgroundColor);
+      if (c) c.a *= parseFloat(cs.opacity) >= 0 ? parseFloat(cs.opacity) : 1;
+      var behindS = effectiveBg(el.parentElement || el);
+      if (!c || c.a === 0 || !behindS.color) { ntUnresolved++; continue; }
+      ntChecked++;
+      var cc = over(c, behindS.color), rr = ratio(cc, behindS.color);
+      ntPrev.set(el, cc);
+      if (rr < 3) {
+        var prevEl = el.previousElementSibling;
+        push(out.nonTextContrast, {
+          selector: sel(el), part: 'fill', ratio: r2(rr), required: 3, kind: 'selector', color: hex(cc),
+          background: hex(behindS.color), vsPrevious: prevEl && ntPrev.has(prevEl) ? r2(ratio(cc, ntPrev.get(prevEl))) : undefined,
+          note: behindS.note || undefined
+        });
+      }
+    }
+  });
+
+  // ---------- label in name (WCAG 2.5.3) ----------
+  interactive.forEach(function (el) {
+    if (el.getAttribute('aria-hidden') === 'true') return;
+    var lb = el.getAttribute('aria-labelledby'), al = el.getAttribute('aria-label');
+    if (!(lb && lb.trim()) && !(al && al.trim())) return;
+    var vis = (el.labels && el.labels.length) ? Array.prototype.map.call(el.labels, visibleTextOf).join(' ') : visibleTextOf(el);
+    var nv = norm(vis); if (!nv) return;
+    var name = accName(el);
+    if (norm(name).indexOf(nv) < 0) push(out.labelInName, { selector: sel(el), visibleText: vis.slice(0, 60), accessibleName: name.slice(0, 60) });
+  });
+
+  // ---------- ARIA conflicts ----------
+  function rendered(el) { return getComputedStyle(el).display !== 'none' && el.getClientRects().length > 0; }
+  function focusableIn(scope, skipNativeRadio) {
+    return Array.prototype.filter.call(scope.querySelectorAll(INTERACTIVE), function (n) {
+      if (skipNativeRadio && n.tagName === 'INPUT' && (n.type === 'radio')) return false;
+      return n.tabIndex >= 0 && !isDisabled(n) && rendered(n);
+    });
+  }
+  var ariaNodes = doc.body ? doc.body.querySelectorAll('[role], [aria-pressed], [aria-checked], [aria-selected], [aria-hidden="true"], button, a[href]') : [];
+  var CHECKED_OK = /^(checkbox|radio|switch|menuitemcheckbox|menuitemradio|option|treeitem)$/;
+  var SELECTED_OK = /^(option|tab|gridcell|row|columnheader|rowheader|treeitem)$/;
+  for (var ak = 0; ak < ariaNodes.length && ak < MAX_EL; ak++) {
+    var an = ariaNodes[ak];
+    if (!rendered(an)) continue;
+    var explicitRole = (an.getAttribute('role') || '').trim().split(/\s+/)[0].toLowerCase();
+    var native = an.tagName === 'INPUT' || an.tagName === 'SELECT' || an.tagName === 'TEXTAREA';
+    var role = explicitRole || (an.tagName === 'BUTTON' ? 'button' : (an.tagName === 'A' ? 'link' : ''));
+    var issues = [];
+    if (an.hasAttribute('aria-pressed') && role !== 'button') issues.push('aria-pressed on role=' + (role || an.tagName.toLowerCase()) + (role === 'radio' || role === 'tab' ? ' (use aria-' + (role === 'radio' ? 'checked' : 'selected') + ')' : ''));
+    if (an.hasAttribute('aria-checked') && !native && !CHECKED_OK.test(role)) issues.push('aria-checked on ' + (explicitRole ? 'role=' + role : 'a ' + an.tagName.toLowerCase() + ' without a checkbox, radio or switch role'));
+    if (an.hasAttribute('aria-selected') && !native && !SELECTED_OK.test(role)) issues.push('aria-selected on ' + (explicitRole ? 'role=' + role : 'a ' + an.tagName.toLowerCase() + ' without an option or tab role'));
+    if (role === 'tab' && !an.hasAttribute('aria-selected')) issues.push('role=tab without aria-selected');
+    if (role === 'tab' && !an.closest('[role="tablist"]')) issues.push('role=tab outside a tablist');
+    if (!native && /^(radio|checkbox|switch)$/.test(explicitRole) && !an.hasAttribute('aria-checked')) issues.push('role=' + role + ' without aria-checked');
+    if (!native && explicitRole === 'radio' && !an.closest('[role="radiogroup"]')) issues.push('role=radio outside a radiogroup');
+    if (explicitRole === 'option' && !an.closest('[role="listbox"], [role="combobox"], [role="grid"], [role="tree"]')) issues.push('role=option outside a listbox');
+    if (/^menuitem/.test(explicitRole) && !an.closest('[role="menu"], [role="menubar"], [role="group"]')) issues.push('role=' + explicitRole + ' outside a menu');
+    if (/^(tablist|radiogroup|menu|menubar|listbox|toolbar|tree|grid)$/.test(explicitRole) && !an.hasAttribute('aria-activedescendant')) {
+      var stops = focusableIn(an, true).length;
+      if (stops > 1) issues.push('role=' + explicitRole + ' has ' + stops + ' tab stops (roving tabindex expected)');
+    }
+    if (an.getAttribute('aria-hidden') === 'true' && !(an.parentElement && an.parentElement.closest('[aria-hidden="true"]'))) {
+      var selfF = an.matches(INTERACTIVE) && an.tabIndex >= 0 && !isDisabled(an);
+      var inner = focusableIn(an, false).filter(function (n) { return n !== an; }).length;
+      if (selfF) issues.push('aria-hidden on a focusable element');
+      else if (inner) issues.push('aria-hidden subtree contains ' + inner + ' focusable element(s)');
+    }
+    if ((role === 'button' || role === 'link') && an.parentElement && an.parentElement.closest('a[href], button, [role="button"], [role="link"]')) issues.push('interactive element nested inside another button or link');
+    issues.forEach(function (msg) { push(out.ariaConflicts, { selector: sel(an), issue: msg }); });
+  }
+
+  // ---------- layout overflow (for the 200% text recipe) ----------
+  out.layoutOverflow = {
+    documentScrollWidth: root.scrollWidth, clientWidth: root.clientWidth,
+    horizontalScroll: root.scrollWidth > root.clientWidth + 1,
+    count: overflowItems.count, truncated: overflowItems.truncated, items: overflowItems.items
+  };
 
   // unnamed controls
   interactive.forEach(function (el) {
@@ -438,8 +803,10 @@
   out.stats = {
     elementsScanned: scanned, interactive: interactive.length, textElementsChecked: textChecked,
     contrastExemptDisabled: exemptDisabled, focusChecked: focusChecked, focusVisibleMatched: focusVisibleMatched,
+    hitScan: HIT_SCAN, targetCandidates: targetCands.length, hitProbed: probed, hitProbeCovered: probeCovered,
+    hitProbeOffscreen: probeOffscreen, nonTextChecked: ntChecked, nonTextUnresolved: ntUnresolved,
     ms: Date.now() - t0
   };
-  out.thresholds = { minTargetPx: TARGET, minTextPx: MIN_TEXT, contrastSmall: 4.5, contrastLarge: 3, largeTextPx: 24, largeBoldTextPx: 18.66 };
+  out.thresholds = { minTargetPx: TARGET, minTextPx: MIN_TEXT, contrastSmall: 4.5, contrastLarge: 3, nonText: 3, largeTextPx: 24, largeBoldTextPx: 18.66 };
   return JSON.parse(JSON.stringify(out));
 })

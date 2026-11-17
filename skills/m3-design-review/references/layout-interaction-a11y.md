@@ -6,11 +6,12 @@ Units: dp as in the source; on the web 1dp is treated as 1 CSS px.
 Distilled from Material Design 3 documentation (Apache 2.0 / CC BY 4.0); see NOTICE.md.
 
 Tiers: F = floor (accessibility/usability minimum, never negotiable), C = core M3 (deviation needs an explicit decision), E = Expressive-only, optional or platform-specific.
-ID prefixes: LAY- layout, INT- interaction, A11- accessibility structure/semantics, WRT- writing and text.
+ID prefixes: LAY- layout, INT- interaction, A11- accessibility structure/semantics, WRT- writing and text, CMP- cross-component.
 
 ## Accessibility floor
 
-Apply these to any surface. Each row repeats a rule defined in a later section.
+Apply these to any surface. A11-01..A11-15 repeat a rule defined elsewhere (cross-reference in the row); A11-29..A11-35 are defined here and point to related rules.
+Where a row cites WCAG 2.2 or the WAI-ARIA Authoring Practices (APG), M3 does not state the rule in the pages covered.
 
 | ID | Floor check | Criterion | Tier | Source |
 | --- | --- | --- | --- | --- |
@@ -24,11 +25,18 @@ Apply these to any surface. Each row repeats a rule defined in a later section.
 | A11-08 | Text scaling | UI survives a text increase of at least 200% without clipping, overlap or lost content or function (see WRT-01..WRT-06) | F | foundations/writing/text-resizing@2025-09-26 |
 | A11-09 | Truncation | Any ellipsis has a way to reveal the full text (tooltip or link) | F | foundations/writing/text-truncation@2025-09-26 |
 | A11-10 | Keyboard operability | Primary and secondary journeys are completable with Tab, arrows, Enter and Escape alone | F | foundations/designing/flow@2025-10-08 |
-| A11-11 | Dialog focus | Opening a dialog or modal pane moves focus into it; closing returns focus to the trigger | F | foundations/designing/flow@2025-10-08 |
+| A11-11 | Dialog focus | Opening a dialog, modal pane or modal sheet moves focus into it; closing returns focus to the trigger (see LAY-27). Menus and popups: A11-34; view or page changes: A11-33 | F | foundations/designing/flow@2025-10-08 |
 | A11-12 | Semantics | Use native controls and semantic HTML; interactive elements carry a role; headings do not skip levels | F | foundations/designing/overview@2025-10-08 |
 | A11-13 | Density never shrinks targets | Default density keeps targets at 48 x 48 CSS px; denser modes are opt-in only (see LAY-28) | F | foundations/layout/grids-spacing/density@2026-05-15 |
 | A11-14 | Single-key shortcuts | Any keyboard shortcut defaults to two or more keys; single-key shortcuts must be remappable or focus-scoped (see INT-25) | F | foundations/designing/flow@2025-10-08 |
-| A11-15 | Motion reduction | Not stated in the foundations pages covered here (layout, interaction, designing, writing); check the motion and component references | F | n/a |
+| A11-15 | Motion reduction | With the reduced-motion setting on (`prefers-reduced-motion` on the web), subtle fades replace sliding and scaling; parallax and shape morph are disabled (repeats MOT-06) | F | styles/motion/transitions/applying-transitions@2025-09-26 |
+| A11-29 | Color is never the only cue in data and status | Each chart series, segment, legend entry and status state is also told apart by a non-color cue (direct label, value, pattern, marker shape, icon or text). Parts needed to read the chart meet 3:1 against adjacent colors (COL-06). Charts carry a text summary or alt text (data type plus reason for the chart). See A11-04, INT-01 | F | WCAG 2.2 SC 1.4.1, WCAG 2.2 SC 1.4.11, foundations/content-design/alt-text@2025-09-26 |
+| A11-30 | Minimum text size | Content text (body, values, captions, chart and axis labels) renders at 12 CSS px or more at default zoom; adapters may raise the threshold, not lower it. Text that M3 maps to the label-small token (badges, list overlines, trailing supporting text) is judged by TYP-01 instead. Heuristic: WCAG 2.2 sets no minimum size, and 12 px is the smallest common readable default for content text | F | heuristic |
+| A11-31 | Accessible name contains the visible label | A control with visible text has an accessible name that contains that text (best starting with it), so voice users can say what they see; an aria-label with different words fails. M3 states the label of chips and segmented buttons is their visible text. Icon-only controls: A11-23 | F | WCAG 2.2 SC 2.5.3, components/chips/accessibility@2026-05-18, components/segmented-buttons/accessibility@2026-05-18 |
+| A11-32 | Arrow keys in composite widgets | An element with a composite role (tablist, radiogroup, menu, menubar, listbox, toolbar, grid) moves focus between its items with the arrow keys (radios move and select), and Tab leaves the group; a roving tabindex or aria-activedescendant is the recommended web technique. Where M3 sets Tab per item (segmented buttons, navigation bar), Tab per item is not a violation, but arrows must still work if a composite role is claimed. Otherwise do not claim the role: use buttons with aria-pressed, or links with aria-current (see INT-29) | F | components/radio-button/accessibility@2026-02-16, components/tabs/accessibility@2026-05-18, components/chips/accessibility@2026-05-18, components/menus/accessibility@2026-05-18, WAI-ARIA APG Developing a Keyboard Interface (roving tabindex) |
+| A11-33 | Focus after a view or page change | When the main view is replaced (route, navigation destination, full-screen sheet or detail view), focus goes to the new view's title, heading or first control if the activating control is gone; it may stay on the control if it remains on screen (tab, navigation item). Focus never falls to the document body or a removed element; back or close returns focus to the control that opened the view (see INT-30) | F | foundations/designing/flow@2025-10-08, WCAG 2.2 SC 2.4.3 |
+| A11-34 | Menus, popups and modal surfaces manage focus | On open, focus moves inside (first item for menus, MNU-06); arrows move between menu items; Escape, outside tap and back close; Tab never moves focus behind a modal surface or into a closed popup. Escape or cancel returns focus to the trigger; after choosing an item, focus goes to the trigger or to the result of the action (M3 leaves this to the app), never to the body. Content behind a modal dialog, sheet or pane is inert (LAY-27) | F | components/menus/accessibility@2026-05-18, foundations/designing/flow@2025-10-08, foundations/layout/scaffold/panes@2026-05-19, WAI-ARIA APG Menu Button pattern, WAI-ARIA APG Dialog (Modal) pattern |
+| A11-35 | Headings present | Each screen and major region marks its visible section titles as headings (or labelled landmarks), so screen-reader users can jump between blocks; a title styled like a heading but exposed as plain text fails. Hierarchy: A11-22 | F | foundations/designing/structure@2025-10-08, WCAG 2.2 SC 1.3.1 |
 
 ## Layout: breakpoints and window size classes
 
@@ -129,8 +137,8 @@ Apply these to any surface. Each row repeats a rule defined in a later section.
 | INT-10 | Hover inheritance | Buttons, cards, checkbox, chips, pickers, list items, slider, switch, text fields; not app bars, badges, dialogs, menus, nav components, sheets, tabs | C | foundations/interaction/states/applying-states@2025-08-05 |
 | INT-11 | Focus applies to all interactive components | Higher-emphasis overlay than hover; one focus at a time; combinable with hover, activated, selected | C | foundations/interaction/states/applying-states@2025-08-05 |
 | INT-12 | Keyboard focus indicator | Tabbing to an element shows a ring-like indicator in addition to the state layer | F | foundations/interaction/states/applying-states@2025-08-05 |
-| INT-13 | Pressed state | High emphasis; ripple overlay; buttons and cards may also gain elevation; one pressed at a time; applies to all interactive components | C | foundations/interaction/states/applying-states@2025-08-05 |
-| INT-14 | Pressed not inherited | App bars, badges, bottom navigation, dialogs, menus, sheets, tabs | C | foundations/interaction/states/applying-states@2025-08-05 |
+| INT-13 | Pressed state | High emphasis; ripple overlay; buttons and cards may also gain elevation; one pressed at a time. Applies to every actionable element; inside the containers of INT-14 it shows on the actionable item, not the container | C | foundations/interaction/states/applying-states@2025-08-05 |
+| INT-14 | Pressed not inherited by containers | App bars, badges, bottom navigation, dialogs, menus, sheets and tabs show no pressed state as a whole; their actionable items (app bar action, navigation item, tab) do (INT-13) | C | foundations/interaction/states/applying-states@2025-08-05 |
 | INT-15 | Dragged state | Low emphasis so it does not distract; list items, chips, cards may gain elevation; started by touch-and-hold; one at a time | C | foundations/interaction/states/applying-states@2025-08-05 |
 | INT-16 | Dragged inheritance | Cards, chips, list items, sliders only; not buttons, app bars, badges, dialogs, menus, nav components | C | foundations/interaction/states/applying-states@2025-08-05 |
 
@@ -164,13 +172,19 @@ Apply these to any surface. Each row repeats a rule defined in a later section.
 | A11-19 | Source order equals reading order | Screen readers follow HTML order, not CSS visual order; DOM order must match the intended reading sequence | F | foundations/designing/structure@2025-10-08 |
 | A11-20 | Landmarks (web) | Use navigation, search, main, banner, complementary, contentinfo, region, form; exactly one main, one banner, one contentinfo | C | foundations/designing/structure@2025-10-08 |
 | A11-21 | Landmark labels | Label every region and every repeated landmark (for example two navs); do not repeat the role word inside the label | C | foundations/designing/structure@2025-10-08 |
-| A11-22 | Heading hierarchy | Headings follow content hierarchy not visual style, sequential H1-H6 with no skipped level, single H1 recommended | F | foundations/designing/structure@2025-10-08 |
+| A11-22 | Heading hierarchy | Headings follow content hierarchy, not visual style, sequential H1-H6 with no skipped level (the floor check). M3 recommends a single H1 for the page title: report a missing or repeated H1 as a suggestion, not a floor issue. Presence of headings: A11-35 | F | foundations/designing/structure@2025-10-08 |
 | A11-23 | Elements needing labels | Icon-only buttons, interactive images, progress and error cues, status icons, meaningful images; also generic link text ("Learn more") and repeated generic buttons ("Save") | F | foundations/designing/elements@2025-10-08 |
 | A11-24 | Labels exclude the role | Do not put "button" or "menu" in the label; do not label non-interactive text or buttons whose text is already descriptive | C | foundations/designing/elements@2025-10-08 |
 | A11-25 | Decorative visuals hidden | Mark decorative icons and images as decorative so assistive tech skips them | F | foundations/designing/elements@2025-10-08 |
 | A11-26 | Roles on interactive elements | Assign ARIA roles (web) or component type (mobile); prefer native controls and semantic HTML | F | foundations/designing/elements@2025-10-08 |
 | A11-27 | Alt text | Short label, up to 125 characters, no "image of"; essential text embedded in an image must be repeated in alt text or adjacent text | F | foundations/writing/best-practices@2025-09-26 |
 | A11-28 | Design for assistive tech | Keyboard/D-pad, screen readers (TalkBack, VoiceOver, JAWS), switch input and voice input must reach all functions | F | foundations/overview/assistive-technology@2025-09-26 |
+
+## Cross-component rules
+
+| ID | Rule | Value / criterion | Tier | Source |
+| --- | --- | --- | --- | --- |
+| CMP-01 | Classify a control by its function, not its look | Decide what the control does, then apply that component's rules and report once under them. A single-select chip row that switches views or sorts (2-5 options) works as a segmented button (connected button group in Expressive): selection cue SEG-05 and outline contrast SEG-04 apply, while chip geometry (CHP-01..CHP-03) still applies to shape and size. A chip row that filters a collection stays a filter chip set (M3 offers single-select filter chips as an alternative to segmented buttons), so CHP-05 and COL-23 apply. A row that swaps content panels is tabs (TAB-*, A11-32) | C | components/chips/guidelines@2026-05-18, components/segmented-buttons/guidelines@2026-05-18 |
 
 ## Writing and text
 
@@ -191,7 +205,7 @@ Apply these to any surface. Each row repeats a rule defined in a later section.
 
 - Resize the viewport through 599, 600, 839, 840, 1199, 1200 and 1600px: pane count, nav component, margins (16 or 24) and spacers (24) change at the right widths.
 - Measure computed target size of every button, icon button, chip and list row: 48 x 48 minimum, 8px gap.
-- Tab through the page: ring visible on each stop, order matches visual order, dialog traps and returns focus.
+- Tab through the page: ring visible on each stop, order matches visual order, dialogs, sheets and menus contain and return focus (A11-34), arrows work in composite widgets (A11-32).
 - Set text to 200%: nothing clipped, overlapped or hidden; check ellipses have a title/tooltip.
 - Switch to dir=rtl: nav rail on the right, directional icons flipped, charts and media controls not flipped.
 - Inspect hover/focus/press overlays against 8/10/10% and confirm a second cue beyond color.

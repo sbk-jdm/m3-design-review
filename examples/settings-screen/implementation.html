@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F3FCF2">
+<title>Settings</title>
+<style>
+/* ===== Tokens from the brief, section 10 (names and values as given) ===== */
+:root {
+  --md-sys-color-primary: #396937;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #BBF0B6;
+  --md-sys-color-on-primary-container: #205121;
+  --md-sys-color-secondary: #50644D;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #D2E9CF;
+  --md-sys-color-on-secondary-container: #384C36;
+  --md-sys-color-tertiary: #14696B;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #A4EFF1;
+  --md-sys-color-on-tertiary-container: #004F52;
+  --md-sys-color-error: #C00013;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFDAD3;
+  --md-sys-color-on-error-container: #93000C;
+  --md-sys-color-surface: #F3FCF2;
+  --md-sys-color-on-surface: #171D16;
+  --md-sys-color-surface-variant: #DAE6D8;
+  --md-sys-color-on-surface-variant: #40493F;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #EDF6EC;
+  --md-sys-color-surface-container: #E8F0E6;
+  --md-sys-color-surface-container-high: #E2EAE1;
+  --md-sys-color-surface-container-highest: #DCE5DB;
+  --md-sys-color-surface-dim: #D4DCD3;
+  --md-sys-color-surface-bright: #F3FCF2;
+  --md-sys-color-inverse-surface: #2C322B;
+  --md-sys-color-inverse-on-surface: #EAF3E9;
+  --md-sys-color-inverse-primary: #A0D49B;
+  --md-sys-color-outline: #707A6E;
+  --md-sys-color-outline-variant: #BECABD;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-primary-fixed: #BBF0B6;
+  --md-sys-color-primary-fixed-dim: #A0D49B;
+  --md-sys-color-on-primary-fixed: #062100;
+  --md-sys-color-on-primary-fixed-variant: #205121;
+  --md-sys-color-secondary-fixed: #D2E9CF;
+  --md-sys-color-secondary-fixed-dim: #B6CDB3;
+  --md-sys-color-on-secondary-fixed: #0F1F0B;
+  --md-sys-color-on-secondary-fixed-variant: #384C36;
+  --md-sys-color-tertiary-fixed: #A4EFF1;
+  --md-sys-color-tertiary-fixed-dim: #89D3D5;
+  --md-sys-color-on-tertiary-fixed: #002021;
+  --md-sys-color-on-tertiary-fixed-variant: #004F52;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --md-sys-color-primary: #A0D49B;
+    --md-sys-color-on-primary: #03390B;
+    --md-sys-color-primary-container: #205121;
+    --md-sys-color-on-primary-container: #BBF0B6;
+    --md-sys-color-secondary: #B6CDB3;
+    --md-sys-color-on-secondary: #233521;
+    --md-sys-color-secondary-container: #384C36;
+    --md-sys-color-on-secondary-container: #D2E9CF;
+    --md-sys-color-tertiary: #89D3D5;
+    --md-sys-color-on-tertiary: #003738;
+    --md-sys-color-tertiary-container: #004F52;
+    --md-sys-color-on-tertiary-container: #A4EFF1;
+    --md-sys-color-error: #FFB4A5;
+    --md-sys-color-on-error: #690001;
+    --md-sys-color-error-container: #93000C;
+    --md-sys-color-on-error-container: #FFDAD3;
+    --md-sys-color-surface: #0E150C;
+    --md-sys-color-on-surface: #DCE5DB;
+    --md-sys-color-surface-variant: #40493F;
+    --md-sys-color-on-surface-variant: #BECABD;
+    --md-sys-color-surface-container-lowest: #071105;
+    --md-sys-color-surface-container-low: #171D16;
+    --md-sys-color-surface-container: #1B211A;
+    --md-sys-color-surface-container-high: #252C24;
+    --md-sys-color-surface-container-highest: #30372F;
+    --md-sys-color-surface-dim: #0E150C;
+    --md-sys-color-surface-bright: #343B33;
+    --md-sys-color-inverse-surface: #DCE5DB;
+    --md-sys-color-inverse-on-surface: #2C322B;
+    --md-sys-color-inverse-primary: #396937;
+    --md-sys-color-outline: #899487;
+    --md-sys-color-outline-variant: #40493F;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-primary-fixed: #BBF0B6;
+    --md-sys-color-primary-fixed-dim: #A0D49B;
+    --md-sys-color-on-primary-fixed: #062100;
+    --md-sys-color-on-primary-fixed-variant: #205121;
+    --md-sys-color-secondary-fixed: #D2E9CF;
+    --md-sys-color-secondary-fixed-dim: #B6CDB3;
+    --md-sys-color-on-secondary-fixed: #0F1F0B;
+    --md-sys-color-on-secondary-fixed-variant: #384C36;
+    --md-sys-color-tertiary-fixed: #A4EFF1;
+    --md-sys-color-tertiary-fixed-dim: #89D3D5;
+    --md-sys-color-on-tertiary-fixed: #002021;
+    --md-sys-color-on-tertiary-fixed-variant: #004F52;
+  }
+}
+
+[data-theme="dark"] {
+  --md-sys-color-primary: #A0D49B;
+  --md-sys-color-on-primary: #03390B;
+  --md-sys-color-primary-container: #205121;
+  --md-sys-color-on-primary-container: #BBF0B6;
+  --md-sys-color-secondary: #B6CDB3;
+  --md-sys-color-on-secondary: #233521;
+  --md-sys-color-secondary-container: #384C36;
+  --md-sys-color-on-secondary-container: #D2E9CF;
+  --md-sys-color-tertiary: #89D3D5;
+  --md-sys-color-on-tertiary: #003738;
+  --md-sys-color-tertiary-container: #004F52;
+  --md-sys-color-on-tertiary-container: #A4EFF1;
+  --md-sys-color-error: #FFB4A5;
+  --md-sys-color-on-error: #690001;
+  --md-sys-color-error-container: #93000C;
+  --md-sys-color-on-error-container: #FFDAD3;
+  --md-sys-color-surface: #0E150C;
+  --md-sys-color-on-surface: #DCE5DB;
+  --md-sys-color-surface-variant: #40493F;
+  --md-sys-color-on-surface-variant: #BECABD;
+  --md-sys-color-surface-container-lowest: #071105;
+  --md-sys-color-surface-container-low: #171D16;
+  --md-sys-color-surface-container: #1B211A;
+  --md-sys-color-surface-container-high: #252C24;
+  --md-sys-color-surface-container-highest: #30372F;
+  --md-sys-color-surface-dim: #0E150C;
+  --md-sys-color-surface-bright: #343B33;
+  --md-sys-color-inverse-surface: #DCE5DB;
+  --md-sys-color-inverse-on-surface: #2C322B;
+  --md-sys-color-inverse-primary: #396937;
+  --md-sys-color-outline: #899487;
+  --md-sys-color-outline-variant: #40493F;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-primary-fixed: #BBF0B6;
+  --md-sys-color-primary-fixed-dim: #A0D49B;
+  --md-sys-color-on-primary-fixed: #062100;
+  --md-sys-color-on-primary-fixed-variant: #205121;
+  --md-sys-color-secondary-fixed: #D2E9CF;
+  --md-sys-color-secondary-fixed-dim: #B6CDB3;
+  --md-sys-color-on-secondary-fixed: #0F1F0B;
+  --md-sys-color-on-secondary-fixed-variant: #384C36;
+  --md-sys-color-tertiary-fixed: #A4EFF1;
+  --md-sys-color-tertiary-fixed-dim: #89D3D5;
+  --md-sys-color-on-tertiary-fixed: #002021;
+  --md-sys-color-on-tertiary-fixed-variant: #004F52;
+}
+
+[data-theme="light"] {
+  --md-sys-color-primary: #396937;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #BBF0B6;
+  --md-sys-color-on-primary-container: #205121;
+  --md-sys-color-secondary: #50644D;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #D2E9CF;
+  --md-sys-color-on-secondary-container: #384C36;
+  --md-sys-color-tertiary: #14696B;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #A4EFF1;
+  --md-sys-color-on-tertiary-container: #004F52;
+  --md-sys-color-error: #C00013;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFDAD3;
+  --md-sys-color-on-error-container: #93000C;
+  --md-sys-color-surface: #F3FCF2;
+  --md-sys-color-on-surface: #171D16;
+  --md-sys-color-surface-variant: #DAE6D8;
+  --md-sys-color-on-surface-variant: #40493F;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #EDF6EC;
+  --md-sys-color-surface-container: #E8F0E6;
+  --md-sys-color-surface-container-high: #E2EAE1;
+  --md-sys-color-surface-container-highest: #DCE5DB;
+  --md-sys-color-surface-dim: #D4DCD3;
+  --md-sys-color-surface-bright: #F3FCF2;
+  --md-sys-color-inverse-surface: #2C322B;
+  --md-sys-color-inverse-on-surface: #EAF3E9;
+  --md-sys-color-inverse-primary: #A0D49B;
+  --md-sys-color-outline: #707A6E;
+  --md-sys-color-outline-variant: #BECABD;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-primary-fixed: #BBF0B6;
+  --md-sys-color-primary-fixed-dim: #A0D49B;
+  --md-sys-color-on-primary-fixed: #062100;
+  --md-sys-color-on-primary-fixed-variant: #205121;
+  --md-sys-color-secondary-fixed: #D2E9CF;
+  --md-sys-color-secondary-fixed-dim: #B6CDB3;
+  --md-sys-color-on-secondary-fixed: #0F1F0B;
+  --md-sys-color-on-secondary-fixed-variant: #384C36;
+  --md-sys-color-tertiary-fixed: #A4EFF1;
+  --md-sys-color-tertiary-fixed-dim: #89D3D5;
+  --md-sys-color-on-tertiary-fixed: #002021;
+  --md-sys-color-on-tertiary-fixed-variant: #004F52;
+}
+
+:root {
+  --md-ref-typeface-brand: Roboto, "Noto Sans", system-ui, sans-serif;
+  --md-ref-typeface-plain: Roboto, "Noto Sans", system-ui, sans-serif;
+  --md-sys-typescale-display-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-large-size: 3.5625rem; /* 57px */
+  --md-sys-typescale-display-large-line-height: 4rem; /* 64px */
+  --md-sys-typescale-display-large-weight: 400;
+  --md-sys-typescale-display-large-tracking: -0.0044em; /* -0.25px */
+  --md-sys-typescale-display-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-medium-size: 2.8125rem; /* 45px */
+  --md-sys-typescale-display-medium-line-height: 3.25rem; /* 52px */
+  --md-sys-typescale-display-medium-weight: 400;
+  --md-sys-typescale-display-medium-tracking: 0em; /* 0px */
+  --md-sys-typescale-display-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-small-size: 2.25rem; /* 36px */
+  --md-sys-typescale-display-small-line-height: 2.75rem; /* 44px */
+  --md-sys-typescale-display-small-weight: 400;
+  --md-sys-typescale-display-small-tracking: 0em; /* 0px */
+  --md-sys-typescale-headline-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-headline-large-size: 2rem; /* 32px */
+  --md-sys-typescale-headline-large-line-height: 2.5rem; /* 40px */
+  --md-sys-typescale-headline-large-weight: 400;
+  --md-sys-typescale-headline-large-tracking: 0em; /* 0px */
+  --md-sys-typescale-headline-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-headline-medium-size: 1.75rem; /* 28px */
+  --md-sys-typescale-headline-medium-line-height: 2.25rem; /* 36px */
+  --md-sys-typescale-headline-medium-weight: 400;
+  --md-sys-typescale-headline-medium-tracking: 0em; /* 0px */
+  --md-sys-typescale-headline-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-headline-small-size: 1.5rem; /* 24px */
+  --md-sys-typescale-headline-small-line-height: 2rem; /* 32px */
+  --md-sys-typescale-headline-small-weight: 400;
+  --md-sys-typescale-headline-small-tracking: 0em; /* 0px */
+  --md-sys-typescale-title-large-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-title-large-size: 1.375rem; /* 22px */
+  --md-sys-typescale-title-large-line-height: 1.75rem; /* 28px */
+  --md-sys-typescale-title-large-weight: 400;
+  --md-sys-typescale-title-large-tracking: 0em; /* 0px */
+  --md-sys-typescale-title-medium-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-title-medium-size: 1rem; /* 16px */
+  --md-sys-typescale-title-medium-line-height: 1.5rem; /* 24px */
+  --md-sys-typescale-title-medium-weight: 500;
+  --md-sys-typescale-title-medium-tracking: 0.0094em; /* 0.15px */
+  --md-sys-typescale-title-small-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-title-small-size: 0.875rem; /* 14px */
+  --md-sys-typescale-title-small-line-height: 1.25rem; /* 20px */
+  --md-sys-typescale-title-small-weight: 500;
+  --md-sys-typescale-title-small-tracking: 0.0071em; /* 0.1px */
+  --md-sys-typescale-body-large-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-body-large-size: 1rem; /* 16px */
+  --md-sys-typescale-body-large-line-height: 1.5rem; /* 24px */
+  --md-sys-typescale-body-large-weight: 400;
+  --md-sys-typescale-body-large-tracking: 0.0313em; /* 0.5px */
+  --md-sys-typescale-body-medium-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-body-medium-size: 0.875rem; /* 14px */
+  --md-sys-typescale-body-medium-line-height: 1.25rem; /* 20px */
+  --md-sys-typescale-body-medium-weight: 400;
+  --md-sys-typescale-body-medium-tracking: 0.0179em; /* 0.25px */
+  --md-sys-typescale-body-small-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-body-small-size: 0.75rem; /* 12px */
+  --md-sys-typescale-body-small-line-height: 1rem; /* 16px */
+  --md-sys-typescale-body-small-weight: 400;
+  --md-sys-typescale-body-small-tracking: 0.0333em; /* 0.4px */
+  --md-sys-typescale-label-large-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-label-large-size: 0.875rem; /* 14px */
+  --md-sys-typescale-label-large-line-height: 1.25rem; /* 20px */
+  --md-sys-typescale-label-large-weight: 500;
+  --md-sys-typescale-label-large-tracking: 0.0071em; /* 0.1px */
+  --md-sys-typescale-label-medium-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-label-medium-size: 0.75rem; /* 12px */
+  --md-sys-typescale-label-medium-line-height: 1rem; /* 16px */
+  --md-sys-typescale-label-medium-weight: 500;
+  --md-sys-typescale-label-medium-tracking: 0.0417em; /* 0.5px */
+  --md-sys-typescale-label-small-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-label-small-size: 0.6875rem; /* 11px */
+  --md-sys-typescale-label-small-line-height: 1rem; /* 16px */
+  --md-sys-typescale-label-small-weight: 500;
+  --md-sys-typescale-label-small-tracking: 0.0455em; /* 0.5px */
+}
+
+:root {
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-large-increased: 20px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-extra-large-increased: 32px;
+  --md-sys-shape-corner-extra-extra-large: 48px;
+  --md-sys-shape-corner-full: 9999px;
+}
+
+/* Text size setting (B-08). Small 0.875, Medium 1 (default), Large 1.25. */
+:root { --app-text-scale: 1; }
+:root[data-text-size="small"] { --app-text-scale: 0.875; }
+:root[data-text-size="large"] { --app-text-scale: 1.25; }
+
+/* Scaled type: every text style used in content applies size and line height through these, never the raw
+   tokens. Floor 0.75rem (12px at default browser size) for size, 1rem for line height (A11-30, B-08).
+   Pattern, repeated for each style the app uses (body-large shown): */
+:root {
+  --app-type-body-large-size: max(0.75rem, calc(var(--md-sys-typescale-body-large-size) * var(--app-text-scale)));
+  --app-type-body-large-line-height: max(1rem, calc(var(--md-sys-typescale-body-large-line-height) * var(--app-text-scale)));
+}
+/* The app bar title (title-large) uses the raw tokens, unscaled (WRT-05). */
+
+/* Focus ring (B-17) */
+:root {
+  --app-focus-ring-width: 3px;
+  --app-focus-ring-color: var(--md-sys-color-secondary);
+  --app-focus-ring-offset: 2px;       /* rows use -3px (inset) */
+}
+
+/* State layer opacities (M3 INT-03) and disabled values (M3 BTN-05, INT-06) */
+:root {
+  --app-state-hover: 0.08;
+  --app-state-focus: 0.10;
+  --app-state-pressed: 0.10;
+  --app-disabled-content: 0.38;
+  --app-disabled-container: 0.10;
+  --app-scrim-opacity: 0.32;          /* M3 ELV-09 */
+}
+
+/* Motion (M3 MOT-02, MOT-03) */
+:root {
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+}
+/* Theme switching and native-control color scheme (B-18) */
+:root { color-scheme: light dark; }
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* Scaled type styles (B-08): floor 0.75rem size, 1rem line height. title-large is NOT scaled (WRT-05). */
+:root {
+  --app-type-body-large-size: max(0.75rem, calc(var(--md-sys-typescale-body-large-size) * var(--app-text-scale)));
+  --app-type-body-large-line-height: max(1rem, calc(var(--md-sys-typescale-body-large-line-height) * var(--app-text-scale)));
+  --app-type-body-medium-size: max(0.75rem, calc(var(--md-sys-typescale-body-medium-size) * var(--app-text-scale)));
+  --app-type-body-medium-line-height: max(1rem, calc(var(--md-sys-typescale-body-medium-line-height) * var(--app-text-scale)));
+  --app-type-body-small-size: max(0.75rem, calc(var(--md-sys-typescale-body-small-size) * var(--app-text-scale)));
+  --app-type-body-small-line-height: max(1rem, calc(var(--md-sys-typescale-body-small-line-height) * var(--app-text-scale)));
+  --app-type-label-large-size: max(0.75rem, calc(var(--md-sys-typescale-label-large-size) * var(--app-text-scale)));
+  --app-type-label-large-line-height: max(1rem, calc(var(--md-sys-typescale-label-large-line-height) * var(--app-text-scale)));
+  --app-type-title-small-size: max(0.75rem, calc(var(--md-sys-typescale-title-small-size) * var(--app-text-scale)));
+  --app-type-title-small-line-height: max(1rem, calc(var(--md-sys-typescale-title-small-line-height) * var(--app-text-scale)));
+  --app-type-title-medium-size: max(0.75rem, calc(var(--md-sys-typescale-title-medium-size) * var(--app-text-scale)));
+  --app-type-title-medium-line-height: max(1rem, calc(var(--md-sys-typescale-title-medium-line-height) * var(--app-text-scale)));
+  --app-type-headline-small-size: max(0.75rem, calc(var(--md-sys-typescale-headline-small-size) * var(--app-text-scale)));
+  --app-type-headline-small-line-height: max(1rem, calc(var(--md-sys-typescale-headline-small-line-height) * var(--app-text-scale)));
+}
+
+/* ===== Screen styles ===== */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html.no-anim *, html.no-anim *::before, html.no-anim *::after { transition: none !important; }
+body {
+  margin: 0; min-height: 100vh;
+  background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  animation: screen-in var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard-decelerate);
+}
+body.leaving { animation: screen-out var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard-accelerate) forwards; }
+@keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes screen-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* type styles */
+.t-bl { font-family: var(--md-sys-typescale-body-large-font); font-size: var(--app-type-body-large-size); line-height: var(--app-type-body-large-line-height); font-weight: var(--md-sys-typescale-body-large-weight); letter-spacing: var(--md-sys-typescale-body-large-tracking); }
+.t-bm { font-family: var(--md-sys-typescale-body-medium-font); font-size: var(--app-type-body-medium-size); line-height: var(--app-type-body-medium-line-height); font-weight: var(--md-sys-typescale-body-medium-weight); letter-spacing: var(--md-sys-typescale-body-medium-tracking); }
+.t-bs { font-family: var(--md-sys-typescale-body-small-font); font-size: var(--app-type-body-small-size); line-height: var(--app-type-body-small-line-height); font-weight: var(--md-sys-typescale-body-small-weight); letter-spacing: var(--md-sys-typescale-body-small-tracking); }
+.t-ll { font-family: var(--md-sys-typescale-label-large-font); font-size: var(--app-type-label-large-size); line-height: var(--app-type-label-large-line-height); font-weight: var(--md-sys-typescale-label-large-weight); letter-spacing: var(--md-sys-typescale-label-large-tracking); }
+.t-ts { font-family: var(--md-sys-typescale-title-small-font); font-size: var(--app-type-title-small-size); line-height: var(--app-type-title-small-line-height); font-weight: var(--md-sys-typescale-title-small-weight); letter-spacing: var(--md-sys-typescale-title-small-tracking); }
+.t-tm { font-family: var(--md-sys-typescale-title-medium-font); font-size: var(--app-type-title-medium-size); line-height: var(--app-type-title-medium-line-height); font-weight: var(--md-sys-typescale-title-medium-weight); letter-spacing: var(--md-sys-typescale-title-medium-tracking); }
+.t-hs { font-family: var(--md-sys-typescale-headline-small-font); font-size: var(--app-type-headline-small-size); line-height: var(--app-type-headline-small-line-height); font-weight: var(--md-sys-typescale-headline-small-weight); letter-spacing: var(--md-sys-typescale-headline-small-tracking); }
+
+/* App bar */
+.appbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 4px;
+  min-height: calc(64px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 0 0 4px;
+  background: var(--md-sys-color-surface); border-radius: var(--md-sys-shape-corner-none); box-shadow: none;
+  transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+.appbar.scrolled { background: var(--md-sys-color-surface-container); }
+.appbar h1 {
+  margin: 0; font-family: var(--md-sys-typescale-title-large-font); font-size: var(--md-sys-typescale-title-large-size);
+  line-height: var(--md-sys-typescale-title-large-line-height); font-weight: var(--md-sys-typescale-title-large-weight);
+  letter-spacing: var(--md-sys-typescale-title-large-tracking); color: var(--md-sys-color-on-surface); outline: none;
+}
+.icon-btn {
+  position: relative; isolation: isolate; flex: none; width: 48px; height: 48px; padding: 0; border: 0; background: none;
+  color: var(--md-sys-color-on-surface); display: grid; place-items: center; cursor: pointer; border-radius: var(--md-sys-shape-corner-full);
+}
+.icon-btn svg { width: 24px; height: 24px; fill: currentColor; }
+.icon-btn::before, .btn::before {
+  content: ""; position: absolute; inset: 4px; z-index: -1; border-radius: var(--md-sys-shape-corner-full);
+  background: currentColor; opacity: 0; transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+.icon-btn:focus-visible, .btn:focus-visible { outline: none; }
+.icon-btn:focus-visible::before, .btn:focus-visible::before { opacity: var(--app-state-focus); outline: var(--app-focus-ring-width) solid var(--app-focus-ring-color); outline-offset: var(--app-focus-ring-offset); }
+.tip {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 20; white-space: nowrap; pointer-events: none; opacity: 0;
+  padding: 4px 8px; border-radius: var(--md-sys-shape-corner-extra-small);
+  background: var(--md-sys-color-inverse-surface); color: var(--md-sys-color-inverse-on-surface);
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+.icon-btn:focus-visible .tip { opacity: 1; }
+
+main { max-width: 600px; margin: 0 auto; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+
+/* Offline status */
+.offline {
+  display: flex; align-items: center; gap: 12px; margin: 8px 16px 0; padding: 16px;
+  background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium);
+}
+.offline svg { flex: none; width: 24px; height: 24px; fill: var(--md-sys-color-on-surface-variant); }
+.offline span { color: var(--md-sys-color-on-surface); }
+
+/* Headings, legends */
+h2.sec { margin: 0; padding: 16px 16px 8px; color: var(--md-sys-color-primary); outline: none; }
+fieldset { margin: 0; padding: 0; border: 0; min-inline-size: 0; }
+legend { display: block; width: 100%; padding: 8px 16px; color: var(--md-sys-color-on-surface-variant); }
+
+/* Rows */
+.row {
+  position: relative; isolation: isolate; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px;
+  margin: 0; padding: 8px 16px; border: 0; background: none; color: var(--md-sys-color-on-surface); text-align: left; cursor: pointer;
+}
+.row.two { min-height: 72px; }
+.row.static { cursor: default; }
+.row::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--md-sys-color-on-surface); opacity: 0; pointer-events: none;
+  transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+.row.static::before { display: none; }
+@media (hover: hover) { .row:not(.static):not(:disabled):not([aria-disabled="true"]):hover::before { opacity: var(--app-state-hover); } }
+.row:not(.static):not(:disabled):not([aria-disabled="true"]):active::before { opacity: var(--app-state-pressed); }
+.row:focus-visible, .row:has(:focus-visible) { outline: var(--app-focus-ring-width) solid var(--app-focus-ring-color); outline-offset: -3px; }
+.row:focus-visible::before, .row:has(:focus-visible)::before { opacity: var(--app-state-focus); }
+.row input:focus-visible { outline: none; }
+.txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sup { color: var(--md-sys-color-on-surface-variant); }
+.sup.err { color: var(--md-sys-color-error); }
+.row:disabled .lbl, .row.disabled .lbl { color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--app-disabled-content) * 100%), transparent); }
+.row.danger .lbl { color: var(--md-sys-color-error); }
+.row:disabled { cursor: default; }
+.wrapany { overflow-wrap: anywhere; }
+
+/* Account */
+.avatar {
+  flex: none; width: 40px; height: 40px; border-radius: var(--md-sys-shape-corner-full); display: grid; place-items: center;
+  background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);
+}
+.skel { display: block; height: 12px; border-radius: var(--md-sys-shape-corner-full); background: var(--md-sys-color-surface-container-highest); }
+
+/* Switch */
+.sw-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.sw-input:disabled { cursor: default; }
+.sw {
+  position: relative; flex: none; width: 52px; height: 32px; border-radius: var(--md-sys-shape-corner-full);
+  border: 2px solid var(--md-sys-color-outline); background: var(--md-sys-color-surface-container-highest);
+  transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard), border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+.sw .handle {
+  position: absolute; left: 6px; top: 6px; width: 16px; height: 16px; border-radius: var(--md-sys-shape-corner-full); background: var(--md-sys-color-outline);
+  transition: left var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard), top var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    width var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard), height var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+.sw-input:checked ~ .sw { background: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+.sw-input:checked ~ .sw .handle { left: 22px; top: 2px; width: 24px; height: 24px; background: var(--md-sys-color-on-primary); }
+.row:active .sw .handle { left: 0; top: 0; width: 28px; height: 28px; }
+.row:active .sw-input:checked ~ .sw .handle { left: 20px; top: 0; }
+.row.unsupported .sw { opacity: var(--app-disabled-content); }
+.row.unsupported .lbl { color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--app-disabled-content) * 100%), transparent); }
+.row.unsupported { cursor: default; }
+
+/* Time field */
+.tf { margin: 8px 16px 16px; }
+.tf-box {
+  position: relative; min-height: 56px; padding: 8px 16px; border: 0; box-shadow: inset 0 0 0 1px var(--md-sys-color-outline); border-radius: var(--md-sys-shape-corner-extra-small);
+  display: flex; flex-direction: column; justify-content: center;
+}
+@media (hover: hover) { .tf:not(.off) .tf-box:hover { box-shadow: inset 0 0 0 1px var(--md-sys-color-on-surface); } }
+.tf-label { color: var(--md-sys-color-on-surface-variant); }
+.tf-input {
+  display: block; width: 100%; height: var(--app-type-body-large-line-height); margin: 0; padding: 0; border: 0; background: transparent;
+  color: var(--md-sys-color-on-surface); outline: none; font-variant-numeric: tabular-nums;
+}
+.tf-box:has(.tf-input:focus) { box-shadow: inset 0 0 0 3px var(--md-sys-color-primary); }
+.tf-box:has(.tf-input:focus) .tf-label { color: var(--md-sys-color-primary); }
+.tf-box:has(.tf-input:focus-visible) { outline: var(--app-focus-ring-width) solid var(--app-focus-ring-color); outline-offset: var(--app-focus-ring-offset); }
+.tf-help { margin: 4px 0 0; padding: 0 16px; color: var(--md-sys-color-on-surface-variant); }
+.tf-err { display: none; position: absolute; right: 16px; top: 16px; width: 24px; height: 24px; fill: var(--md-sys-color-error); pointer-events: none; }
+.tf.invalid .tf-box { box-shadow: inset 0 0 0 1px var(--md-sys-color-error); padding-right: 48px; }
+.tf.invalid .tf-box:has(.tf-input:focus) { box-shadow: inset 0 0 0 3px var(--md-sys-color-error); }
+.tf.invalid .tf-label, .tf.invalid .tf-box:has(.tf-input:focus) .tf-label, .tf.invalid .tf-help { color: var(--md-sys-color-error); }
+.tf.invalid .tf-err { display: block; }
+.tf.off .tf-label, .tf.off .tf-input, .tf.off .tf-help { color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--app-disabled-content) * 100%), transparent); }
+.tf.off .tf-box { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--app-disabled-container) * 100%), transparent); }
+.tf.off .tf-input::-webkit-calendar-picker-indicator { opacity: var(--app-disabled-content); }
+
+/* Radios */
+.radio {
+  -webkit-appearance: none; appearance: none; flex: none; margin: 2px; width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--md-sys-color-on-surface-variant); background: transparent; cursor: pointer;
+}
+.radio:checked { border-color: var(--md-sys-color-primary); background: radial-gradient(circle at center, var(--md-sys-color-primary) 0 5px, transparent 5.5px); }
+.rslot { flex: none; width: 24px; height: 24px; display: grid; place-items: center; }
+.rslot .radio { margin: 0; }
+
+/* Spinner */
+.spin { flex: none; width: 24px; height: 24px; color: var(--md-sys-color-primary); animation: spin 1.4s linear infinite; }
+.spin circle { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 40 23; }
+.spin.sm { width: 20px; height: 20px; color: inherit; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Dialogs */
+dialog {
+  width: min(560px, calc(100vw - 48px)); max-width: none; margin: auto; padding: 24px; border: 0; box-shadow: none;
+  border-radius: var(--md-sys-shape-corner-extra-large); background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);
+}
+dialog[open] { display: flex; flex-direction: column; animation: fade-in var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard-decelerate); }
+dialog[open]::backdrop { background: rgb(0 0 0 / 0.32); background: color-mix(in srgb, var(--md-sys-color-scrim) calc(var(--app-scrim-opacity) * 100%), transparent); animation: fade-in var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard-decelerate); }
+dialog.closing { animation: fade-out var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard-accelerate) forwards; }
+dialog.closing::backdrop { animation: fade-out var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard-accelerate) forwards; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+.dlg-head { margin: 0; flex: none; }
+.dlg-body { margin: 16px 0 0; overflow-y: auto; min-height: 0; color: var(--md-sys-color-on-surface-variant); }
+.dlg-body p { margin: 0; }
+.dlg-error { margin: 16px 0 0 !important; color: var(--md-sys-color-error); }
+.dlg-actions { flex: none; display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+.btn {
+  position: relative; isolation: isolate; min-height: 48px; padding: 0 16px; border: 0; background: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px; color: var(--md-sys-color-primary);
+}
+.btn.danger { color: var(--md-sys-color-error); }
+@media (hover: hover) { .btn:not([aria-disabled="true"]):hover::before { opacity: var(--app-state-hover); } }
+.btn:not([aria-disabled="true"]):active::before { opacity: var(--app-state-pressed); }
+dialog.busy-vis .btn { color: color-mix(in srgb, var(--md-sys-color-on-surface) calc(var(--app-disabled-content) * 100%), transparent); cursor: default; }
+dialog.busy-vis .btn::before { display: none; }
+
+/* Snackbar */
+#snack { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 30; pointer-events: none; }
+.snackbar {
+  min-height: 48px; padding: 14px 16px; border-radius: var(--md-sys-shape-corner-extra-small); box-shadow: none;
+  background: var(--md-sys-color-inverse-surface); color: var(--md-sys-color-inverse-on-surface);
+  overflow-wrap: anywhere; animation: snack-in var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard-decelerate);
+}
+.snackbar.leave { animation: fade-out var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard-accelerate) forwards; }
+@keyframes snack-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  body, body.leaving, dialog[open], dialog[open]::backdrop, dialog.closing, dialog.closing::backdrop { animation: none; }
+  dialog.closing { display: none; }
+  .appbar, .sw, .sw .handle { transition: none; }
+  .snackbar { animation: fade-in var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard-decelerate); }
+  .spin { display: none; }
+}
+</style>
+<script>
+/* Applied before first paint (B-18): data-theme, data-text-size, theme-color. */
+(function () {
+  var DEF = { reminder: { enabled: false, time: '20:00' }, theme: 'system', textSize: 'medium', weekStart: 'monday' };
+  function loadSettings() {
+    var s = { reminder: { enabled: DEF.reminder.enabled, time: DEF.reminder.time }, theme: DEF.theme, textSize: DEF.textSize, weekStart: DEF.weekStart }, o = null;
+    try { o = JSON.parse(localStorage.getItem('settings')); } catch (e) {}
+    if (o && typeof o === 'object') {
+      if (['system', 'light', 'dark'].indexOf(o.theme) > -1) s.theme = o.theme;
+      if (['small', 'medium', 'large'].indexOf(o.textSize) > -1) s.textSize = o.textSize;
+      if (['monday', 'sunday'].indexOf(o.weekStart) > -1) s.weekStart = o.weekStart;
+      if (o.reminder && typeof o.reminder === 'object') {
+        if (typeof o.reminder.enabled === 'boolean') s.reminder.enabled = o.reminder.enabled;
+        if (typeof o.reminder.time === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(o.reminder.time)) s.reminder.time = o.reminder.time;
+      }
+    }
+    return s;
+  }
+  function updateThemeColor() {
+    var m = document.querySelector('meta[name="theme-color"]');
+    m.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-surface').trim());
+  }
+  function applyAppearance(s) {
+    var r = document.documentElement;
+    if (s.theme === 'light' || s.theme === 'dark') r.setAttribute('data-theme', s.theme); else r.removeAttribute('data-theme');
+    r.setAttribute('data-text-size', s.textSize);
+    updateThemeColor();
+  }
+  window.AppSettings = { load: loadSettings, apply: applyAppearance, updateThemeColor: updateThemeColor };
+  applyAppearance(loadSettings());
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeColor);
+})();
+</script>
+</head>
+<body>
+<header class="appbar" id="appbar">
+  <button type="button" class="icon-btn" id="back" aria-label="Back">
+    <svg viewBox="0 -960 960 960" aria-hidden="true"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+    <span class="tip t-bs" aria-hidden="true">Back</span>
+  </button>
+  <h1 id="title" tabindex="-1">Settings</h1>
+</header>
+<main>
+  <div id="offline" role="status"></div>
+
+  <div>
+    <h2 class="sec t-ts">Account</h2>
+    <div class="row two static" id="account"></div>
+    <button type="button" class="row" id="signout"><span class="txt t-bl"><span class="lbl">Sign out</span></span></button>
+  </div>
+
+  <div>
+    <h2 class="sec t-ts">Reminders</h2>
+    <label class="row two" id="remRow">
+      <input type="checkbox" role="switch" class="sw-input" id="remSwitch" aria-labelledby="remLbl" aria-describedby="remSup">
+      <span class="txt"><span class="lbl t-bl" id="remLbl">Daily reminder</span><span class="sup t-bm" id="remSup">Get a notification to check in on your habits</span></span>
+      <span class="sw" aria-hidden="true"><span class="handle"></span></span>
+    </label>
+    <div class="tf" id="tf">
+      <div class="tf-box">
+        <label class="tf-label t-bs" for="time">Reminder time</label>
+        <input type="time" class="tf-input t-bl" id="time" aria-describedby="timeHelp">
+        <svg class="tf-err" viewBox="0 -960 960 960" aria-hidden="true"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+      </div>
+      <p class="tf-help t-bs" id="timeHelp">Every day, in this device's time zone</p>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="sec t-ts">Appearance</h2>
+    <fieldset id="fs-theme"><legend class="t-ll">Theme</legend>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="theme" value="system"></span><span class="txt t-bl">System default</span></label>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="theme" value="light"></span><span class="txt t-bl">Light</span></label>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="theme" value="dark"></span><span class="txt t-bl">Dark</span></label>
+    </fieldset>
+    <fieldset id="fs-size"><legend class="t-ll">Text size</legend>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="textSize" value="small"></span><span class="txt t-bl">Small</span></label>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="textSize" value="medium"></span><span class="txt t-bl">Medium</span></label>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="textSize" value="large"></span><span class="txt t-bl">Large</span></label>
+    </fieldset>
+  </div>
+
+  <div>
+    <h2 class="sec t-ts">Calendar</h2>
+    <fieldset id="fs-week"><legend class="t-ll">Week starts on</legend>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="weekStart" value="monday"></span><span class="txt t-bl">Monday</span></label>
+      <label class="row"><span class="rslot"><input type="radio" class="radio" name="weekStart" value="sunday"></span><span class="txt t-bl">Sunday</span></label>
+    </fieldset>
+  </div>
+
+  <div>
+    <h2 class="sec t-ts" id="dataHeading" tabindex="-1">Data</h2>
+    <button type="button" class="row two" id="export" aria-labelledby="expLbl" aria-describedby="expSup">
+      <span class="txt"><span class="lbl t-bl" id="expLbl">Export data</span><span class="sup t-bm" id="expSup">Download your habits and check-ins as a CSV file</span></span>
+      <span id="expBusy"></span>
+    </button>
+    <button type="button" class="row two danger" id="delete" aria-labelledby="delLbl" aria-describedby="delSup">
+      <span class="txt"><span class="lbl t-bl" id="delLbl">Delete all data</span><span class="sup t-bm" id="delSup">Permanently delete your habits and check-in history</span></span>
+    </button>
+  </div>
+</main>
+
+<dialog id="dlgDelete" role="alertdialog" aria-labelledby="delH" aria-describedby="delB">
+  <p class="dlg-head t-hs" id="delH">Delete all data?</p>
+  <div class="dlg-body t-bm"><p id="delB">This permanently deletes your habits and check-in history on this device and in your account. You can't undo this. To keep a copy, export your data first.</p>
+    <p class="dlg-error t-bm" id="delErr" role="alert" hidden>Couldn't delete your data. Check your connection and try again.</p></div>
+  <div class="dlg-actions">
+    <button type="button" class="btn t-ll" id="delCancel">Cancel</button>
+    <button type="button" class="btn danger t-ll" id="delConfirm"><span id="delConfirmLbl">Delete</span></button>
+  </div>
+</dialog>
+
+<dialog id="dlgSignout" role="alertdialog" aria-labelledby="soH" aria-describedby="soB">
+  <p class="dlg-head t-hs" id="soH">Sign out?</p>
+  <div class="dlg-body t-bm"><p id="soB">Some changes haven't synced yet. If you sign out now, they'll be lost.</p></div>
+  <div class="dlg-actions">
+    <button type="button" class="btn t-ll" id="soCancel">Cancel</button>
+    <button type="button" class="btn t-ll" id="soConfirm">Sign out</button>
+  </div>
+</dialog>
+
+<div id="snack" role="status" aria-live="polite"></div>
+
+<script>
+/* Test hooks (URL params): ?delay=ms simulated latency for export/delete/profile; ?fail=export|delete;
+   ?profile=none|fail; ?unsynced=1 pretend unsynced changes exist; ?seed=1 reseed placeholder habit data. */
+(function () {
+  'use strict';
+  var Q = new URLSearchParams(location.search);
+  var DELAY = parseInt(Q.get('delay'), 10) || 0;
+  var $ = function (id) { return document.getElementById(id); };
+  var reduced = function () { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  var CLOUD_OFF = '<svg viewBox="0 -960 960 960" aria-hidden="true"><path d="M800-420q0-17-4.5-33T782-480l58 58q5 5 7 11t2 12h-49Zm-88 80ZM791-56 56-791l57-57L848-113l-57 57ZM260-160q-92 0-156-64T40-380q0-77 47.5-137T210-596q4-17 9-33t13-31l60 60q-1 5-1.5 11t-.5 11v18h-40q-58 0-99 41t-41 99q0 58 41 99t99 41h340l80 80H260Zm190-414Zm57-76q17-23 43.5-37.5T604-702q33 0 60 12.5t47 32.5q20 20 33.5 47.5T758-552v28h52q43 0 72 31t29 73q0 28-14.5 51T857-326l-58-58q8-3 13.5-10.5T818-413q0-17-12-28.5T777-453h-79v-98q0-58-41-99t-99-41q-26 0-50 9.5T468-657l-75-75q-1-1-2.5-1.5T388-734l119 84Z"/></svg>';
+
+  /* ---------- settings ---------- */
+  var S = AppSettings.load();
+  var online = navigator.onLine;
+  function save() {
+    localStorage.setItem('settings', JSON.stringify(S));
+    if (!navigator.onLine) localStorage.setItem('unsynced', '1');
+  }
+  var hasUnsynced = function () { return Q.get('unsynced') === '1' || localStorage.getItem('unsynced') === '1'; };
+
+  /* ---------- placeholder data ---------- */
+  function seedData() {
+    var d = { habits: [{ id: 1, name: 'Drink water' }, { id: 2, name: 'Read 20 minutes' }, { id: 3, name: 'Evening walk' }], checkins: [] };
+    for (var i = 0; i < 6; i++) { var t = new Date(); t.setDate(t.getDate() - i); var iso = ymd(t); d.checkins.push({ habit: 1, date: iso }); if (i % 2 === 0) d.checkins.push({ habit: 2, date: iso }); }
+    return d;
+  }
+  function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  var data;
+  try { data = JSON.parse(localStorage.getItem('habitData')); } catch (e) { data = null; }
+  if (!data || !Array.isArray(data.habits) || Q.get('seed') === '1') { data = seedData(); localStorage.setItem('habitData', JSON.stringify(data)); }
+  var hasData = function () { return data.habits.length > 0; };
+
+  /* ---------- helpers ---------- */
+  var noAnimTimer;
+  function repaintAtOnce() {
+    var r = document.documentElement; r.classList.add('no-anim');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { r.classList.remove('no-anim'); }); });
+  }
+
+  /* ---------- snackbar ---------- */
+  var snackEl = $('snack'), snackT;
+  function snack(msg) {
+    clearTimeout(snackT); snackEl.textContent = '';
+    var d = document.createElement('div'); d.className = 't-bm snackbar'; d.textContent = msg; snackEl.appendChild(d);
+    snackT = setTimeout(dismissSnack, 6000);
+  }
+  function dismissSnack() {
+    clearTimeout(snackT);
+    var d = snackEl.firstElementChild; if (!d || d.classList.contains('leave')) return;
+    d.classList.add('leave'); setTimeout(function () { d.remove(); }, 200);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !document.querySelector('dialog[open]')) dismissSnack();
+  });
+
+  /* ---------- app bar, back ---------- */
+  var appbar = $('appbar');
+  function onScroll() { appbar.classList.toggle('scrolled', window.scrollY > 0); }
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  $('back').addEventListener('click', function () {
+    document.body.classList.add('leaving');
+    setTimeout(function () { if (history.length > 1) history.back(); else location.assign('/'); }, reduced() ? 0 : 200);
+  });
+  window.addEventListener('pageshow', function () { document.body.classList.remove('leaving'); });
+  $('title').focus({ preventScroll: true });
+
+  /* ---------- offline ---------- */
+  function renderOffline() {
+    var box = $('offline');
+    if (online) { box.textContent = ''; }
+    else if (!box.firstChild) box.innerHTML = '<div class="offline">' + CLOUD_OFF + '<span class="t-bm">You\'re offline. Changes are saved on this device and sync when you reconnect.</span></div>';
+    renderAccount(); renderData();
+  }
+  window.addEventListener('offline', function () { online = false; renderOffline(); });
+  window.addEventListener('online', function () { online = true; localStorage.removeItem('unsynced'); renderOffline(); });
+
+  /* ---------- account ---------- */
+  var profile = null, profileState = 'ok';
+  try { profile = JSON.parse(localStorage.getItem('profile')); } catch (e) {}
+  if (!profile && !Q.get('profile')) { profile = { name: 'Sample User', email: 'sample.user@example.com' }; localStorage.setItem('profile', JSON.stringify(profile)); }
+  function initials(n) { return n.split(/\s+/).map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase(); }
+  function renderAccount() {
+    var el = $('account'), h;
+    if (profile) {
+      h = '<span class="avatar t-tm" aria-hidden="true"></span><span class="txt wrapany"><span class="t-bl"></span><span class="sup t-bm"></span></span>';
+      el.innerHTML = h;
+      el.querySelector('.avatar').textContent = initials(profile.name);
+      el.querySelector('.txt').children[0].textContent = profile.name;
+      el.querySelector('.txt').children[1].textContent = profile.email;
+    } else if (profileState === 'loading') {
+      el.innerHTML = '<span class="txt" style="gap:12px"><span class="skel" style="width:160px;max-width:100%"></span><span class="skel" style="width:200px;max-width:100%"></span></span>';
+    } else {
+      el.innerHTML = '<span class="txt"><span class="sup t-bm">Account details aren\'t available offline</span></span>';
+    }
+  }
+  function fetchProfile() {
+    if (profile) return;
+    if (!navigator.onLine) { profileState = 'none'; return; }
+    var t = setTimeout(function () { profileState = 'loading'; renderAccount(); }, 200);
+    wait(DELAY).then(function () {
+      clearTimeout(t);
+      if (Q.get('profile') === 'fail') throw 0;
+      profile = { name: 'Sample User', email: 'sample.user@example.com' }; localStorage.setItem('profile', JSON.stringify(profile));
+    }).catch(function () { profileState = 'none'; }).then(renderAccount);
+  }
+
+  /* ---------- dialogs ---------- */
+  function trap(dlg) {
+    dlg.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var f = dlg.querySelectorAll('button'); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+  function openDlg(dlg, focusEl) { dlg.showModal(); focusEl.focus(); }
+  function closeDlg(dlg) {
+    return new Promise(function (res) {
+      if (reduced()) { dlg.close(); return res(); }
+      dlg.classList.add('closing');
+      setTimeout(function () { dlg.close(); dlg.classList.remove('closing'); res(); }, 200);
+    });
+  }
+
+  /* sign out */
+  function doSignOut() { document.dispatchEvent(new CustomEvent('app:signout')); /* sign-in screen is out of scope */ }
+  $('signout').addEventListener('click', function () {
+    if (hasUnsynced()) openDlg($('dlgSignout'), $('soCancel')); else doSignOut();
+  });
+  trap($('dlgSignout'));
+  $('dlgSignout').addEventListener('cancel', function (e) { e.preventDefault(); $('soCancel').click(); });
+  $('soCancel').addEventListener('click', function () { closeDlg($('dlgSignout')).then(function () { $('signout').focus(); }); });
+  $('soConfirm').addEventListener('click', function () { closeDlg($('dlgSignout')).then(doSignOut); });
+
+  /* ---------- reminder ---------- */
+  var sw = $('remSwitch'), tf = $('tf'), timeIn = $('time'), remRow = $('remRow');
+  var supported = 'Notification' in window;
+  function renderReminder() {
+    var perm = supported ? Notification.permission : 'denied';
+    sw.checked = supported && S.reminder.enabled && perm === 'granted';
+    sw.disabled = !supported; remRow.classList.toggle('unsupported', !supported);
+    $('remSup').textContent = !supported ? "Reminders aren't available in this browser."
+      : perm === 'denied' ? 'Notifications are blocked. Allow them for this site in your browser settings.'
+      : 'Get a notification to check in on your habits';
+    tf.classList.toggle('off', !sw.checked); timeIn.disabled = !sw.checked;
+  }
+  sw.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sw.click(); } });
+  sw.addEventListener('change', function () {
+    if (!sw.checked) { S.reminder.enabled = false; save(); renderReminder(); return; }
+    sw.checked = false; /* shows off until permission is granted */
+    var enable = function () { S.reminder.enabled = true; save(); renderReminder(); };
+    if (Notification.permission === 'granted') enable();
+    else if (Notification.permission === 'denied') renderReminder();
+    else Promise.resolve(Notification.requestPermission()).then(function (p) { if (p === 'granted') enable(); else renderReminder(); }, renderReminder);
+  });
+  function onTime() {
+    var v = timeIn.value;
+    if (v) { S.reminder.time = v; save(); setTimeErr(false); } else setTimeErr(true);
+  }
+  function setTimeErr(on) {
+    tf.classList.toggle('invalid', on); timeIn.setAttribute('aria-invalid', on ? 'true' : 'false');
+    $('timeHelp').textContent = on ? 'Enter a time' : "Every day, in this device's time zone";
+  }
+  timeIn.addEventListener('change', onTime); timeIn.addEventListener('input', onTime);
+  timeIn.value = S.reminder.time;
+
+  /* ---------- radios ---------- */
+  document.querySelectorAll('input.radio').forEach(function (r) {
+    r.checked = S[r.name] === r.value;
+    r.addEventListener('change', function () {
+      if (!r.checked) return;
+      S[r.name] = r.value; save();
+      if (r.name === 'theme' || r.name === 'textSize') {
+        repaintAtOnce(); AppSettings.apply(S);
+        if (r.name === 'textSize') requestAnimationFrame(function () { r.scrollIntoView({ block: 'nearest' }); });
+      }
+    });
+  });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { repaintAtOnce(); });
+
+  /* ---------- data: export ---------- */
+  var exporting = false, exportFailed = false, exportBusyVis = false;
+  var expBtn = $('export'), delBtn = $('delete');
+  function lastExportText() {
+    var iso = localStorage.getItem('lastExport'); if (!iso) return null;
+    var d = new Date(iso); if (isNaN(d)) return null;
+    var now = new Date();
+    var date = ymd(d) === ymd(now) ? 'today' : new Intl.DateTimeFormat(undefined, { dateStyle: 'short' }).format(d);
+    return 'Last export: ' + date + ', ' + new Intl.DateTimeFormat(undefined, { timeStyle: 'short' }).format(d);
+  }
+  function renderData() {
+    var sup = $('expSup'), le = lastExportText();
+    expBtn.disabled = !hasData();
+    expBtn.setAttribute('aria-busy', exportBusyVis ? 'true' : 'false');
+    if (exportBusyVis) sup.textContent = 'Preparing your file…';
+    else if (!hasData()) sup.textContent = 'No habit data yet';
+    else if (exportFailed) sup.textContent = 'Export failed. Try again.';
+    else sup.textContent = le || 'Download your habits and check-ins as a CSV file';
+    sup.classList.toggle('err', exportFailed && !exportBusyVis && hasData());
+    if (sup.classList.contains('err')) sup.setAttribute('role', 'alert'); else sup.removeAttribute('role');
+    $('expBusy').innerHTML = exportBusyVis ? '<svg class="spin" viewBox="0 0 24 24" role="progressbar" aria-label="Exporting data"><circle cx="12" cy="12" r="10"/></svg>' : '';
+    var dsup = $('delSup');
+    delBtn.disabled = !hasData() || !online;
+    dsup.textContent = !hasData() ? 'No habit data yet' : !online ? 'Connect to the internet to delete your data' : 'Permanently delete your habits and check-in history';
+  }
+  function csvCell(v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  expBtn.addEventListener('click', function () {
+    if (exporting || !hasData()) return;
+    exporting = true; exportFailed = false;
+    var t = setTimeout(function () { if (exporting) { exportBusyVis = true; renderData(); } }, 200);
+    wait(DELAY).then(function () {
+      if (Q.get('fail') === 'export') throw 0;
+      var names = {}; data.habits.forEach(function (h) { names[h.id] = h.name; });
+      var rows = ['habit,date'].concat(data.checkins.map(function (c) { return csvCell(names[c.habit] || c.habit) + ',' + c.date; }));
+      var name = 'habits-' + ymd(new Date()) + '.csv';
+      var url = URL.createObjectURL(new Blob([rows.join('\n') + '\n'], { type: 'text/csv' }));
+      var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      localStorage.setItem('lastExport', new Date().toISOString());
+      snack('Export ready: ' + name);
+    }).catch(function () { exportFailed = true; }).then(function () {
+      clearTimeout(t); exporting = false; exportBusyVis = false; renderData();
+    });
+  });
+
+  /* ---------- data: delete ---------- */
+  var dd = $('dlgDelete'), delBusy = false;
+  trap(dd);
+  delBtn.addEventListener('click', function () { $('delErr').hidden = true; openDlg(dd, $('delCancel')); });
+  dd.addEventListener('cancel', function (e) { e.preventDefault(); if (!delBusy) $('delCancel').click(); });
+  $('delCancel').addEventListener('click', function () { if (delBusy) return; closeDlg(dd).then(function () { delBtn.focus(); }); });
+  function setDelBusy(on, vis) {
+    delBusy = on;
+    ['delCancel', 'delConfirm'].forEach(function (id) { if (on) $(id).setAttribute('aria-disabled', 'true'); else $(id).removeAttribute('aria-disabled'); });
+    dd.classList.toggle('busy-vis', on && vis);
+    $('delConfirmLbl').textContent = on && vis ? 'Deleting' : 'Delete';
+    var sp = $('delConfirm').querySelector('.spin');
+    if (on && vis && !sp) $('delConfirm').insertAdjacentHTML('beforeend', '<svg class="spin sm" viewBox="0 0 24 24" role="progressbar" aria-label="Deleting data"><circle cx="12" cy="12" r="10"/></svg>');
+    if (!(on && vis) && sp) sp.remove();
+  }
+  $('delConfirm').addEventListener('click', function () {
+    if (delBusy) return;
+    $('delErr').hidden = true; setDelBusy(true, false);
+    var t = setTimeout(function () { if (delBusy) setDelBusy(true, true); }, 200);
+    wait(DELAY).then(function () {
+      if (Q.get('fail') === 'delete' || !navigator.onLine) throw 0;
+      data = { habits: [], checkins: [] }; localStorage.setItem('habitData', JSON.stringify(data));
+      clearTimeout(t); setDelBusy(false);
+      return closeDlg(dd).then(function () {
+        renderData(); snack('All habit data deleted'); $('dataHeading').focus();
+      });
+    }).catch(function () {
+      clearTimeout(t); setDelBusy(false); $('delErr').hidden = false; $('delConfirm').focus();
+    });
+  });
+
+  /* ---------- init ---------- */
+  renderReminder(); renderOffline(); renderData(); renderAccount(); fetchProfile();
+  if (supported && navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({ name: 'notifications' }).then(function (p) { p.onchange = renderReminder; }).catch(function () {});
+  }
+})();
+</script>
+</body>
+</html>

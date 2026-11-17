@@ -46,8 +46,8 @@ Corner tokens: extra-small 4dp, small 8dp, medium 12dp, large 16dp, extra-large 
 | SEG-01 | Segment count | 2 to 5 | C | components/segmented-buttons/guidelines@2026-05-18 |
 | SEG-02 | Height and outline | 40dp tall, 1dp outline, full corners | C | components/segmented-buttons/specs@2026-05-18 |
 | SEG-03 | Selected state | secondary-container fill, on-secondary-container content, check icon | C | components/segmented-buttons/specs@2026-05-18 |
-| SEG-04 | Outline contrast vs surface | at least 3:1 | F | components/segmented-buttons/accessibility@2026-05-18 |
-| SEG-05 | Selection not by color alone | check icon plus color change | F | components/segmented-buttons/accessibility@2026-05-18 |
+| SEG-04 | Outline contrast vs surface | at least 3:1; also applies to a chip row working as a segmented button (CMP-01) | F | components/segmented-buttons/accessibility@2026-05-18 |
+| SEG-05 | Selection not by color alone | check icon plus color change; also applies to a chip row working as a segmented button (CMP-01) | F | components/segmented-buttons/accessibility@2026-05-18 |
 | SEG-06 | Touch target | 48dp | F | components/segmented-buttons/specs@2026-05-18 |
 
 ## Side sheets

@@ -44,7 +44,7 @@ Default surface-container mappings on components: container-low for elevated but
 | COL-03 | Apply roles only in intended pairs or layering orders | Improper mixing (e.g. primary-container fill with on-surface text) can lose legibility when contrast level or theme changes | C | styles/color/roles@2026-05-18 |
 | COL-04 | Do not invent pairs outside the on-* pairs without checking contrast | Only "on-" pairs are guaranteed sufficient contrast; other pairs may miss 4.5:1 (small text) / 3:1 (large text) | F | styles/color/advanced/apply-colors@2025-09-26 |
 | COL-05 | Small text contrast | At least 4.5:1 against its background | F | foundations/designing/color-contrast@2025-10-08 |
-| COL-06 | Large text and graphics contrast | At least 3:1; "large" = 14 pt bold / 18 pt regular and up | F | foundations/designing/color-contrast@2025-10-08 |
+| COL-06 | Large text and graphics contrast | At least 3:1; "large" = 14 pt bold / 18 pt regular and up. Chart parts also need a non-color cue (A11-29) | F | foundations/designing/color-contrast@2025-10-08 |
 | COL-07 | Disabled states are exempt from contrast minimums | No ratio required for disabled | F | foundations/designing/color-contrast@2025-10-08 |
 | COL-08 | Clustered non-text elements (e.g. a button group) need container-vs-background contrast | At least 3:1 between container color and its background | F | foundations/designing/color-contrast@2025-10-08 |
 | COL-09 | Standalone prominent elements (e.g. FAB) are exempt from the 3:1 container rule | Do not flag a FAB container below 3:1 against background | C | foundations/designing/color-contrast@2025-10-08 |
@@ -60,8 +60,8 @@ Default surface-container mappings on components: container-low for elevated but
 | COL-19 | Surface roles are not tied to elevation | Tone-based surface containers replaced the old elevation-tinted surfaces (+1 to +5) | C | styles/color/system/overview@2026-05-06 |
 | COL-20 | Dividers use `outline-variant`, not `outline` | Outline has different contrast requirements | C | styles/color/roles@2026-05-18 |
 | COL-21 | Multi-element containers (cards) use `outline-variant` for borders, not `outline` | Same rationale | C | styles/color/roles@2026-05-18 |
-| COL-22 | Borders that define an interactive target use `outline` or another role with 3:1 against surface | Do not use outline-variant to carry hierarchy or define target boundaries | F | styles/color/roles@2026-05-18 |
-| COL-23 | `outline-variant` borders are allowed on chips/buttons only if inner content has 4.5:1 | Text and icons inside meet 4.5:1 | F | styles/color/roles@2026-05-18 |
+| COL-22 | Borders that define an interactive target use `outline` or another role with 3:1 against surface | Applies when the border is what shows the target boundary (text fields, outlined controls without inner content at 4.5:1, segmented buttons per SEG-04); outline-variant never carries hierarchy or defines target boundaries. Exception: COL-23 | F | styles/color/roles@2026-05-18 |
+| COL-23 | Exception to COL-22: `outline-variant` borders allowed on chips/buttons whose inner content has 4.5:1 | Text and icons inside meet 4.5:1, so they define the target; judge that content, not the border. Not for text fields, nor for a chip row working as a segmented button (CMP-01) | F | styles/color/roles@2026-05-18 |
 | COL-24 | Inverse roles are selective | Use for reversed-contrast surfaces such as snackbars; text button on it uses inverse-primary | C | styles/color/roles@2026-05-18 |
 | COL-25 | Fixed colors are not used where contrast is needed | They do not change between light/dark; use primary/secondary/tertiary roles for buttons and accents | E | styles/color/roles@2026-05-18 |
 | COL-26 | Fixed fills pair with `on-*-fixed`, variants with `on-*-fixed-variant` | Primary-fixed with on-primary-fixed; lower emphasis with on-primary-fixed-variant | E | styles/color/roles@2026-05-18 |
@@ -91,7 +91,7 @@ Default surface-container mappings on components: container-low for elevated but
 ## 5. Misuse patterns the docs state
 
 - Raw hex/tonal values instead of roles (COL-01); wrong pairings such as primary-container with on-surface text (COL-03).
-- Outline for dividers or cards; outline-variant for interactive boundaries (COL-20 to COL-22).
+- Outline for dividers or cards; outline-variant for interactive boundaries (COL-20 to COL-22, exception COL-23).
 - Fixed colors for buttons on surface (COL-25).
 - Replacing semantic red/green with content-based color (COL-31).
 - Container roles used for text or icons (COL-15).

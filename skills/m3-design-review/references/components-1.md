@@ -67,14 +67,15 @@ Corner tokens: extra-small 4dp, small 8dp, medium 12dp, large 16dp, extra-large 
 **Accessibility:**
 - Resizing needs a single-pointer alternative; handle toggles heights on Space/Enter.
 - Handle is a tab stop with role button; label only the handle.
-**Review checks:** 28dp top radius; handle 32x4 with 48dp target; modal opens at most 50% tall; scrim present for modal; width capped at 640dp.
+**Review checks:** 28dp top radius; handle 32x4 with 48dp target when interactive (BSH-02); modal opens at most 50% tall; scrim present for modal; width capped at 640dp.
 | ID | Rule | Value / criterion | Tier | Source |
 | --- | --- | --- | --- | --- |
 | BSH-01 | Container shape and color | top corner 28dp (extra-large); surface-container-low; elevation level1 | C | components/bottom-sheets/specs@2026-05-18 |
-| BSH-02 | Drag handle | 32x4dp, on-surface-variant at 0.4 opacity, 48dp interactive area | F | components/bottom-sheets/accessibility@2026-05-18, components/bottom-sheets/specs@2026-05-18 |
+| BSH-02 | Drag handle, when interactive | Applies when the sheet is user-resizable and the handle is present: 48dp-tall interactive area at the top of the sheet, Tab stop with role button, only the handle labelled, Space/Enter cycles heights (BSH-05). Look: 32x4dp, on-surface-variant (0.4 opacity token deprecated). A decorative handle on a non-resizable sheet is not a target: hide it from assistive tech and judge only its look, as tier C | F | components/bottom-sheets/accessibility@2026-05-18, components/bottom-sheets/specs@2026-05-18 |
 | BSH-03 | Max width | 640dp on larger windows | C | components/bottom-sheets/overview@2026-05-18 |
 | BSH-04 | Modal initial height | at most 50% of screen height | C | components/bottom-sheets/guidelines@2026-05-18 |
 | BSH-05 | Drag alternative | any drag-to-resize needs a single-pointer alternative (handle press cycles heights) | F | components/bottom-sheets/accessibility@2026-05-18 |
+| BSH-06 | Modal dismissal | Modal sheet closes by tapping the scrim, swiping down, an item action, or a close affordance in its app bar; a full-screen modal sheet must show a close affordance; Android predictive back closes it. Keyboard (Escape) and focus return are floor rules: A11-11, A11-34 | C | components/bottom-sheets/guidelines@2026-05-18 |
 
 ## Button groups
 **Use:** Group related buttons; standard (adjacent buttons react) or connected (replaces segmented button).
@@ -215,7 +216,7 @@ Corner tokens: extra-small 4dp, small 8dp, medium 12dp, large 16dp, extra-large 
 | CHP-02 | Spacing | at least 8dp between chips | C | components/chips/guidelines@2026-05-18 |
 | CHP-03 | Target | 48dp minimum, no default density | F | components/chips/accessibility@2026-05-18 |
 | CHP-04 | Label | at most 20 chars; contrast at least 3:1 | F | components/chips/guidelines@2026-05-18 |
-| CHP-05 | Selected filter | secondary-container fill, on-secondary-container label, leading check | C | components/chips/specs@2026-05-18 |
+| CHP-05 | Selected filter | secondary-container fill, on-secondary-container label, leading check. A chip row that switches views instead of filtering is judged by CMP-01 | C | components/chips/specs@2026-05-18 |
 | CHP-06 | Select mode | one behavior per page, single or multi | C | components/chips/guidelines@2026-05-18 |
 | CHP-07 | Input chip remove | required trailing remove icon with own 48dp target | C | components/chips/guidelines@2026-05-18 |
 

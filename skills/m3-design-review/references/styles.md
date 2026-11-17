@@ -28,7 +28,7 @@ Color of text: default on-surface, alternative on-surface-variant, links primary
 
 | ID | Rule | Value / criterion | Tier | Source |
 | --- | --- | --- | --- | --- |
-| TYP-01 | Text uses the five roles (display, headline, title, body, label), each in large/medium/small | Every text element maps to one role+size; no one-off sizes outside the scale | C | styles/typography/applying-type@2026-05-06 |
+| TYP-01 | Text uses the five roles (display, headline, title, body, label), each in large/medium/small | Every text element maps to one role+size; no one-off sizes outside the scale. Minimum size for content text: A11-30 | C | styles/typography/applying-type@2026-05-06 |
 | TYP-02 | Normal text contrast | >= 4.5:1 for small text | F | styles/typography/applying-type@2026-05-06 |
 | TYP-03 | Large text contrast | >= 3:1 for large text | F | styles/typography/applying-type@2026-05-06 |
 | TYP-04 | Line-height ratio for display, headline, title | About 1.2 x font size | C | styles/typography/applying-type@2026-05-06 |
@@ -157,7 +157,7 @@ Transition patterns (legacy easing/duration): Container transform (card to detai
 | MOT-03 | Durations come from tokens | 50 to 1000ms steps listed above; typical pairs in the table | C | styles/motion/easing-and-duration/tokens-specs@2025-09-26 |
 | MOT-04 | Exit shorter than enter | Exit ~200ms; enter ~250 to 400ms | C | styles/motion/easing-and-duration/applying-easing-and-duration@2025-09-26 |
 | MOT-05 | Duration scales with distance/area | Small utility changes short; large traversals long; extra-long only for ambient motion | C | styles/motion/easing-and-duration/applying-easing-and-duration@2025-09-26 |
-| MOT-06 | Reduced-motion setting honored | Subtle fades replace slides/scales; parallax and shape morph disabled | F | styles/motion/transitions/applying-transitions@2025-09-26 |
+| MOT-06 | Reduced-motion setting honored | Subtle fades replace slides/scales; parallax and shape morph disabled (repeated in the floor as A11-15) | F | styles/motion/transitions/applying-transitions@2025-09-26 |
 | MOT-07 | Effects (color, opacity) do not overshoot | Spatial properties may overshoot; effects springs/curves must not | E | styles/motion/overview/how-it-works@2026-05-06 |
 | MOT-08 | One motion scheme per product | Expressive for hero/key moments, standard for utility; mixing is deliberate per element | E | styles/motion/overview/how-it-works@2026-05-06 |
 | MOT-09 | Fade out before fade in | No overlapping semi-transparent content; short fades for dialogs | C | styles/motion/transitions/applying-transitions@2025-09-26 |

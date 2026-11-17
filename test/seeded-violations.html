@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Seeded violations for scripts/measure.js. Each violating element has an id v01..v15; see EXPECTED.md.
+<!-- Seeded violations for scripts/measure.js. Each violating element has an id v01..v24; see EXPECTED.md.
      Elements with ids ok-* are negative controls that must NOT be reported. -->
 <html>
 <head>
@@ -36,6 +36,32 @@
   #ok-disabled { background: #f3f3f3; color: #c4c4c4; }                 /* disabled: exempt */
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .card { border-radius: 12px; background: #f7f2fa; padding: 16px; margin: 8px 0; }
+  /* v0.2 cases (V17..V24) */
+  .chip { position: relative; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; margin: 16px 8px;
+          border-radius: 8px; background: #ffffff; color: #1d1b20; font: 500 14px/20px Roboto, Arial, sans-serif; }
+  .chip::after { content: ""; position: absolute; inset: -6px; }
+  .chip:focus-visible { outline: 3px solid #1d1b20; outline-offset: 2px; }
+  #v17 { border: 1px solid #79747e; box-sizing: border-box; }           /* 1 px border: band 34 + 12 = 46 px */
+  #ok-chip-pseudo { border: 0; box-sizing: border-box; }                /* no border: band 36 + 12 = 48 px */
+  .icon-btn { position: relative; display: inline-flex; width: 24px; height: 24px; padding: 0; margin: 24px;
+              border: 0; background: transparent; }
+  .icon-btn::before { content: ""; position: absolute; top: 50%; left: 50%; width: 48px; height: 48px;
+                      transform: translate(-50%, -50%); }
+  .icon-btn:focus-visible { outline: 3px solid #1d1b20; }
+  .trunc { width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .field { display: block; height: 48px; width: 220px; box-sizing: border-box; padding: 0 16px; font-size: 16px; }
+  .field:focus-visible { outline: 3px solid #1d1b20; }
+  #v19 { border: 0; background: #ece6f0; }                              /* ~1.11:1 against the card, no border */
+  #ok-field { border: 1px solid #79747e; background: #f7f2fa; }          /* 4.1:1 border */
+  #v23 { width: 200px; overflow: hidden; }
+  #v23 > div { width: 320px; }
+  .bar { display: flex; width: 200px; height: 12px; margin: 8px 0; }
+  .bar > i { display: block; flex: 1; }
+  #v24 { background: #eeeeee; }                                         /* 1.05:1 against the card */
+  .hit { position: absolute; inset: -6px; }                             /* hit area from a child, not a pseudo-element */
+  #ok-child-hit { border: 0; box-sizing: border-box; }
+  #ok-child-hit::after { content: none; }
+  #ok-seg { background: #6750a4; }
 </style>
 </head>
 <body>
@@ -64,6 +90,29 @@
   <span class="spin" role="img" aria-label="Loading"></span>
   <span class="sr-only" id="ok-sronly">Screen reader only text</span>
   <p>Read the <a href="#top" id="ok-inline">full terms</a> before you continue with this form.</p>
+  <h2>Cases added in v0.2</h2>
+  <div class="card">
+    <button class="chip" id="v17">Filter</button>                    <!-- V17: 36 px chip, ::after inset -6px, 1 px border: 46 px -->
+    <button class="chip" id="ok-chip-pseudo">Sort</button>           <!-- control: 36 px chip, ::after gives 48 px -->
+    <button class="chip" id="ok-child-hit">Tag<span class="hit"></span></button>  <!-- probe case: a child gives 48 px; seen only by the probe -->
+    <button class="icon-btn" id="ok-icon-centered" aria-label="Close"><svg width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="#1d1b20"/></svg></button>  <!-- control: 24 px icon, centered 48 px ::before -->
+    <div class="trunc" id="v18">A very long label that does not fit in the box</div>   <!-- V18: ellipsis, no title -->
+    <div class="trunc" id="ok-fits">Short</div>                      <!-- control: ellipsis set, text fits -->
+    <label for="v19">Amount</label><input class="field" id="v19" type="text">          <!-- V19: fill ~1.1:1 vs card, no border -->
+    <label for="ok-field">Name</label><input class="field" id="ok-field" type="text">  <!-- control: 4.1:1 border -->
+    <button class="btn" id="v20" aria-label="Submit form">Send now</button>            <!-- V20: name lacks visible text -->
+    <button class="btn" id="ok-labelname" aria-label="Send now to the team">Send now</button>  <!-- control: name contains label -->
+    <div role="radiogroup" aria-label="Period">
+      <button class="btn" role="radio" aria-pressed="true" id="v21">1M</button>       <!-- V21: role=radio with aria-pressed -->
+    </div>
+    <div role="radiogroup" aria-label="Range">
+      <button class="btn" role="radio" aria-checked="true" tabindex="0" id="ok-radio">1Y</button>  <!-- control: valid radio -->
+      <button class="btn" role="radio" aria-checked="false" tabindex="-1">5Y</button>
+    </div>
+    <div id="v23"><div>Wide content row that is cut off by its parent box at narrow widths</div></div>  <!-- V23: clipped overflow -->
+    <div class="bar" role="img" aria-label="Allocation: 50% cash, 50% equity"><i id="v24"></i><i id="ok-seg"></i></div>  <!-- V24: segment 1.05:1 (nonTextSelectors) -->
+  </div>
+  <section hidden><h1 id="v22">Hidden view</h1></section>           <!-- V22: hidden h1 must not count -->
 </main>
 </body>
 </html>

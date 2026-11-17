@@ -163,7 +163,7 @@ Corner tokens: extra-small 4dp, small 8dp, medium 12dp, large 16dp, large-increa
 | MNU-03 | Vibrant | tertiary mapping is high emphasis; use sparingly | E | components/menus/guidelines@2026-05-18 |
 | MNU-04 | Selected cue | 3:1 color difference plus second cue | F | components/menus/accessibility@2026-05-18 |
 | MNU-05 | Slots | targets at least 48dp; one action per item | F | components/menus/accessibility@2026-05-18 |
-| MNU-06 | Focus | first item on open; Escape closes | F | components/menus/accessibility@2026-05-18 |
+| MNU-06 | Focus | first item on open; Escape, outside tap or back closes; focus return and containment: A11-34 | F | components/menus/accessibility@2026-05-18 |
 
 ## Navigation bar
 **Use:** Bottom switcher for 3-5 top-level destinations on compact and medium windows.
@@ -188,6 +188,8 @@ Corner tokens: extra-small 4dp, small 8dp, medium 12dp, large 16dp, large-increa
 | NVB-05 | Icon contrast | at least 3:1 with container | F | components/navigation-bar/guidelines@2026-05-18 |
 | NVB-06 | Window class | compact and medium only; vertical items compact, horizontal medium | C | components/navigation-bar/guidelines@2026-05-18 |
 | NVB-07 | Text scaling | label fully visible to 2x | F | components/navigation-bar/accessibility@2026-05-18 |
+| NVB-08 | No swipe between destinations | Swiping the screen does not move between navigation bar destinations; keep swipe for related items (carousel cards) or item actions (archive). Swiping between tab panels is a tabs behavior, not this | C | components/navigation-bar/guidelines@2026-05-18 |
+| NVB-09 | Color roles | container surface-container; active indicator secondary-container; active icon on-secondary-container; inactive icon and label on-surface-variant; active label secondary (flexible, `md.comp.nav-bar`) or on-surface (baseline, `md.comp.navigation-bar`); focus indicator secondary (baseline token) | C | components/navigation-bar/specs@2026-05-18 |
 
 ## Navigation drawer
 **Use:** Side destination list for 5+ destinations or deep hierarchy. Not recommended in Expressive (use expanded rail).
