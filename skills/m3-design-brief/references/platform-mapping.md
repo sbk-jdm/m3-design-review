@@ -9,8 +9,8 @@ Library API names below are the current Jetpack Compose Material 3 (androidx.com
 
 - Color roles: generated per project (`scheme`, `check`, `export`); see color-scheme.md.
 - Type scale: baseline M3 type scale shipped by the Material 3 libraries. The docs
-  (styles/typography/type-scale-tokens@2026-05-06) name the tokens but give the numbers only as an image.
-- Shape scale: styles.md SHP-01 (styles/shape/corner-radius-scale@2026-05-06). Token form
+  (styles/typography/type-scale-tokens@2026-08-28) name the tokens but give the numbers only as an image.
+- Shape scale: styles.md SHP-01 (styles/shape/corner-radius-scale@2026-07-17). Token form
   `md.sys.shape.corner.<step>`, as used in the component spec tables.
 
 | Type style | Size / line height (sp = CSS px) | Tracking | Weight |

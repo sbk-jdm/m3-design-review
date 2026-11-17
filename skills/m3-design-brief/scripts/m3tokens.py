@@ -693,7 +693,7 @@ TYPE_SCALE = (
 )
 BRAND_FONT_ROLES = ("display", "headline")
 
-# Shape scale: styles.md SHP-01 (styles/shape/corner-radius-scale@2026-05-06).
+# Shape scale: styles.md SHP-01 (styles/shape/corner-radius-scale@2026-07-17).
 SHAPE_SCALE = (
     ("none", "0px"), ("extra-small", "4px"), ("small", "8px"), ("medium", "12px"),
     ("large", "16px"), ("large-increased", "20px"), ("extra-large", "28px"),
@@ -714,7 +714,7 @@ def export_type_css():
         "/*",
         " * Material 3 baseline type scale (15 styles) as CSS custom properties, m3tokens.py %s." % VERSION,
         " * Values: baseline M3 type scale shipped by the Material 3 libraries. The docs",
-        " * (styles/typography/type-scale-tokens@2026-05-06) name the tokens md.sys.typescale.<role>-<size>.",
+        " * (styles/typography/type-scale-tokens@2026-08-28) name the tokens md.sys.typescale.<role>-<size>.",
         " * {font, size, line-height, tracking, weight} but show the numeric table only as an image.",
         " * Sizes in sp = CSS px; size and line height emitted in rem (px / 16); tracking in em (tracking / size).",
         " * Font: display and headline use the brand typeface, the rest the plain typeface",
@@ -741,10 +741,10 @@ def export_shape_css():
     out = [
         "/*",
         " * Material 3 shape (corner radius) scale, m3tokens.py %s." % VERSION,
-        " * Values: M3 rule SHP-01 (m3.material.io/styles/shape/corner-radius-scale, 2026-05-06), 1dp = 1 CSS px.",
+        " * Values: M3 rule SHP-01 (m3.material.io/styles/shape/corner-radius-scale, 2026-07-17), 1dp = 1 CSS px.",
         " * Token names follow md.sys.shape.corner.<step> (used in the component spec tables).",
         " * large-increased, extra-large-increased and extra-extra-large are M3 Expressive additions",
-        " * (styles/shape/overview-principles@2026-05-06). full = fully rounded (pill), not 50%.",
+        " * (styles/shape/overview-principles@2026-07-17). full = fully rounded (pill), not 50%.",
         " */",
         ":root {",
     ]
