@@ -74,7 +74,12 @@ for project guidelines and the decisions ledger, so a deviation recorded once is
 
 ## Install
 
-Download `m3-design-brief.zip` and `m3-design-review.zip` from the latest GitHub Release of `sbk-jdm/m3-skills`, or build
+Download the newest ZIPs (stable links, always the latest version):
+
+- [m3-design-review.zip](https://github.com/sbk-jdm/m3-skills/releases/download/latest-m3-design-review/m3-design-review.zip)
+- [m3-design-brief.zip](https://github.com/sbk-jdm/m3-skills/releases/download/latest-m3-design-brief/m3-design-brief.zip)
+
+Or take a specific version from [Releases](https://github.com/sbk-jdm/m3-skills/releases) (tags `<skill>/vX.Y.Z`), or build
 them yourself (`python3 maintenance/build-zip.py`, see `maintenance/UPDATING.md`). Each ZIP's root is the skill's
 folder (`m3-design-brief/` or `m3-design-review/`), which contains `SKILL.md`. Install one or both.
 

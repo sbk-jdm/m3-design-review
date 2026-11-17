@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   release:
@@ -35,28 +36,59 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
           for dir in skills/*/; do
             name=$(basename "$dir")
             [ -f "$dir/VERSION" ] || continue
             version=$(tr -d '[:space:]' < "$dir/VERSION")
             tag="$name/v$version"
+            roll="latest-$name"
+            rollnotes="Stable download link: always the newest ZIP of $name (currently $version). Versioned releases use tags $name/vX.Y.Z."
+
             if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-              echo "$tag already exists: skipped"
-              continue
+              echo "$tag already exists: not re-released"
+              new=0
+            else
+              notes="release-notes-$name.md"
+              awk -v h="### $name $version" '
+                $0 == h { on = 1; next }
+                on && /^##(#)? / { exit }
+                on { print }
+              ' CHANGELOG.md > "$notes"
+              if [ ! -s "$notes" ]; then
+                echo "No CHANGELOG section '### $name $version'; add it before releasing." >&2
+                exit 1
+              fi
+              gh release create "$tag" "dist/$name.zip" \
+                --target "$GITHUB_SHA" \
+                --title "$name $version" \
+                --notes-file "$notes"
+              echo "Released $tag"
+              new=1
             fi
-            notes="release-notes-$name.md"
-            awk -v h="### $name $version" '
-              $0 == h { on = 1; next }
-              on && /^##(#)? / { exit }
-              on { print }
-            ' CHANGELOG.md > "$notes"
-            if [ ! -s "$notes" ]; then
-              echo "No CHANGELOG section '### $name $version'; add it before releasing." >&2
-              exit 1
+
+            # Rolling release with a stable URL that always serves the newest ZIP.
+            if gh release view "$roll" >/dev/null 2>&1; then
+              if [ "$new" = 1 ]; then
+                gh release upload "$roll" "dist/$name.zip" --clobber
+                gh release edit "$roll" --title "$name (latest: $version)" --notes "$rollnotes"
+              fi
+            else
+              gh release create "$roll" "dist/$name.zip" --prerelease --target "$GITHUB_SHA" \
+                --title "$name (latest: $version)" --notes "$rollnotes"
             fi
-            gh release create "$tag" "dist/$name.zip" \
-              --target "$GITHUB_SHA" \
-              --title "$name $version" \
-              --notes-file "$notes"
-            echo "Released $tag"
+
+            # Notification: an issue (GitHub emails the repo owner) with the upload steps.
+            if [ "$new" = 1 ]; then
+              {
+                echo "New version of **$name**: $version."
+                echo
+                echo "Download: https://github.com/$repo/releases/download/$roll/$name.zip"
+                echo "Notes: https://github.com/$repo/releases/tag/$tag"
+                echo
+                echo "To update it in Claude: Settings > Capabilities > Skills, upload the ZIP (it replaces the previous version)."
+                echo "Close this issue once uploaded."
+              } > "issue-$name.md"
+              gh issue create --title "Update $name in Claude: $version" --body-file "issue-$name.md"
+            fi
           done
