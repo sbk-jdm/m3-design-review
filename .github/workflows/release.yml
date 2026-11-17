@@ -86,7 +86,7 @@ jobs:
                 echo "Download: https://github.com/$repo/releases/download/$roll/$name.zip"
                 echo "Notes: https://github.com/$repo/releases/tag/$tag"
                 echo
-                echo "To update it in Claude: Customize > Skills > "+" > Upload a skill, choose the ZIP (it replaces the previous version)."
+                echo "To update it in Claude: Customize > Skills > \"+\" > Upload a skill, choose the ZIP (it replaces the previous version)."
                 echo "Close this issue once uploaded."
               } > "issue-$name.md"
               gh issue create --title "Update $name in Claude: $version" --body-file "issue-$name.md"
