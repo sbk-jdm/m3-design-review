@@ -118,3 +118,13 @@ twice and compared, so the same input gives the same bytes. `--only <skill>` bui
   focus that is restored).
 - Add a seeded violation and a negative control to `test/seeded-violations.html` for every new check, document it in
   `test/EXPECTED.md` and `test/check.py`, and document the field and its limits in `references/measurement.md`.
+
+
+## Releasing a new version
+
+1. Change the skill, add a `### <skill> <version>` section to `CHANGELOG.md`, and bump `skills/<skill>/VERSION`
+   (also the README table and `m3tokens.py` `VERSION` when they apply).
+2. Run the tests and `python3 maintenance/build-zip.py`.
+3. Push to `main`. The `release` workflow (`.github/workflows/release.yml`) tags `<skill>/vX.Y.Z` and publishes a
+   Release with the ZIP and the CHANGELOG section for every skill whose version has no tag yet. Existing tags are
+   skipped, never moved or deleted. It needs Settings > Actions > General > Workflow permissions: Read and write.

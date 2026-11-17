@@ -1,0 +1,62 @@
+# Creates one tag and one GitHub Release per skill when its VERSION file changes on main.
+# Tag: <skill>/v<version>. Release notes: the "### <skill> <version>" section of CHANGELOG.md.
+# Existing tags are never moved or deleted: a version whose tag already exists is skipped.
+name: release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/*/VERSION'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Check shared references and build ZIPs
+        run: |
+          python3 maintenance/sync-shared.py --check
+          python3 maintenance/build-zip.py
+
+      - name: Tag and release each skill whose version has no tag yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for dir in skills/*/; do
+            name=$(basename "$dir")
+            [ -f "$dir/VERSION" ] || continue
+            version=$(tr -d '[:space:]' < "$dir/VERSION")
+            tag="$name/v$version"
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "$tag already exists: skipped"
+              continue
+            fi
+            notes="release-notes-$name.md"
+            awk -v h="### $name $version" '
+              $0 == h { on = 1; next }
+              on && /^##(#)? / { exit }
+              on { print }
+            ' CHANGELOG.md > "$notes"
+            if [ ! -s "$notes" ]; then
+              echo "No CHANGELOG section '### $name $version'; add it before releasing." >&2
+              exit 1
+            fi
+            gh release create "$tag" "dist/$name.zip" \
+              --target "$GITHUB_SHA" \
+              --title "$name $version" \
+              --notes-file "$notes"
+            echo "Released $tag"
+          done
