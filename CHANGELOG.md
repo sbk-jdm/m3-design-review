@@ -4,6 +4,39 @@ All notable changes to the skills in this repository are documented here. The fo
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and each skill uses [Semantic Versioning](https://semver.org/)
 on its own. Entries up to 0.2.0 concern m3-design-review only (the repository then held one skill).
 
+## 2026-11-17: m3-design-review 0.4.0 and m3-design-brief 0.2.0
+
+References snapshot refreshed: 2026-11-17 (previous: 2026-05-21). Every rule was re-checked against the live
+m3.material.io page text and component token tables; a row's source date moves to the page's new lastmod only when
+its value was fully verified. Rule IDs are unchanged (new rows only at the end of an ID range).
+
+### m3-design-review 0.4.0
+
+#### Changed
+
+- All eight reference files re-verified against the 2026-11-17 site content; corrected values include nav rail and
+  nav bar container roles, list color roles, dialog full-screen container (`surface`), side sheet divider (`outline`),
+  menu baseline geometry, button icon-label gaps, slider handle width when pressed, snackbar two-line height
+  (page text says 64dp, tokens say 68dp; the rule notes both).
+- Expressive: lists and vertical menus are now the recommended variants; extended FAB wording and spring-to-curve
+  table re-verified.
+
+#### Added
+
+- About 20 new rules for expressive lists and menus, FAB and extended FAB usage, icon button corners and colors,
+  progress indicator sizing, navigation rail and drawer details, radio and pull-to-refresh accessibility.
+
+#### Known gaps
+
+- Some rows (per-platform availability EXP-01/02, blog-based Expressive tactics EXP-12..15, EXP-33/34) could not be
+  re-verified and keep their previous source dates.
+
+### m3-design-brief 0.2.0
+
+#### Changed
+
+- Shared references synced with m3-design-review 0.4.0; `color-scheme.md` source dates updated to the new snapshot.
+
 ## 2026-11-17: m3-design-brief 0.1.0 and m3-design-review 0.3.0
 
 References snapshot unchanged: 2026-05-21.

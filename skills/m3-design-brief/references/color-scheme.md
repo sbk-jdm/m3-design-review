@@ -1,11 +1,11 @@
 # Color scheme: roles, tone mapping, brand palettes
 
 How `scripts/m3tokens.py` builds and checks an M3 color scheme, and how to use it with a brand palette.
-Source paths map to `https://m3.material.io/<path>`; `@date` is the page's lastmod in the 2026-05-21 snapshot.
+Source paths map to `https://m3.material.io/<path>`; `@date` is the page's lastmod in the 2026-11-17 snapshot.
 
 ## Roles and what each one is for
 
-From styles/color/roles@2026-05-18 unless noted. The docs count 26 standard roles in six groups (primary, secondary,
+From styles/color/roles@2026-07-27 unless noted. The docs count 26 standard roles in six groups (primary, secondary,
 tertiary, error, surface, outline) plus optional add-on roles (fixed accents, surface dim/bright). The script emits
 46 roles: the standard and add-on roles below, plus `surface-variant`, `shadow` and `scrim` that the libraries keep.
 
@@ -50,15 +50,15 @@ tertiary, error, surface, outline) plus optional add-on roles (fixed accents, su
 | shadow, scrim | Library roles for elevation shadows and modal scrims (black) |
 
 Pair only as intended: foreground `on-X` on fill `X`, `on-surface` / `on-surface-variant` on surfaces and containers.
-Containers are fills, not text colors (styles/color/roles@2026-05-18).
+Containers are fills, not text colors (styles/color/roles@2026-07-27).
 
 ## Tone mapping used by the script
 
 Source: material-color-utilities defaults; the docs show this mapping only as an image. Verified against the docs
 text where possible: primary40 for primary and primary100 for on-primary
-(styles/color/system/how-the-system-works@2026-05-06); light surface tone 98 (changed from 99) and neutral chroma 6
-(changed from 4) (styles/color/system/overview@2026-05-06); tonal palettes run 0 to 100 in steps of 10 plus 95, 98
-and 99 (how-the-system-works@2026-05-06).
+(styles/color/system/how-the-system-works@2026-07-23); light surface tone 98 (changed from 99) and neutral chroma 6
+(changed from 4) (styles/color/system/overview@2026-07-23); tonal palettes run 0 to 100 in steps of 10 plus 95, 98
+and 99 (how-the-system-works@2026-07-23).
 
 | Role (X = primary, secondary, tertiary, error) | Palette | Light | Dark |
 | --- | --- | --- | --- |

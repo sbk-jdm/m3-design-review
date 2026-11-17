@@ -12,7 +12,7 @@ protocol are shared: the canonical copies live in `skills/m3-design-review/refer
 
 ## Freshness
 
-- Current references snapshot: 2026-05-21. It becomes six months old on 2026-11-21; from then on the skill warns in
+- Current references snapshot: 2026-11-17 (mirror: `sbk-jdm/m3-mirror`, workflow `fetch-cited`). It becomes six months old on 2027-05-17; from then on the skill warns in
   every report and recommends refreshing before implementing tier C changes.
 - To refresh, run the mirror's `tools/sync.js` (for example in the md3-reference-hub mirror: `npm install`, then
   `node tools/sync.js`, which needs Node 22 or later; `node tools/validate.js` checks the result) on a machine with

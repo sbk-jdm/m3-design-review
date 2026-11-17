@@ -4,10 +4,10 @@ Two complementary skills for designing and checking user interfaces with Materia
 
 | Skill | Version | What it does |
 | --- | --- | --- |
-| `m3-design-brief` | 0.1.0 | Writes self-contained design briefs (project guidelines, screen specs, change specs) that any AI assistant or developer can implement. Design only: it does not write or edit code. |
-| `m3-design-review` | 0.3.0 | Reviews an existing UI against M3 and returns a numbered, decision-ready report with measured or estimated evidence. Review only. |
+| `m3-design-brief` | 0.2.0 | Writes self-contained design briefs (project guidelines, screen specs, change specs) that any AI assistant or developer can implement. Design only: it does not write or edit code. |
+| `m3-design-review` | 0.4.0 | Reviews an existing UI against M3 and returns a numbered, decision-ready report with measured or estimated evidence. Review only. |
 
-See `CHANGELOG.md`. References snapshot: 2026-05-21.
+See `CHANGELOG.md`. References snapshot: 2026-11-17.
 
 ## How they work together
 
