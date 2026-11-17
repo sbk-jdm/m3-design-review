@@ -129,4 +129,5 @@ twice and compared, so the same input gives the same bytes. `--only <skill>` bui
    Release with the ZIP and the CHANGELOG section for every skill whose version has no tag yet. Existing tags are
    skipped, never moved or deleted. It also keeps one rolling release per skill (`latest-<skill>`, pre-release) whose
    ZIP is replaced on every new version, so the README download links never change, and opens an issue
-   "Update <skill> in Claude: <version>" (GitHub emails you) with the upload steps; close it once uploaded. It needs Settings > Actions > General > Workflow permissions: Read and write.
+   "Update <skill> in Claude: <version>" (GitHub emails you) with the upload steps; close it once uploaded.
+   It needs Settings > Actions > General > Workflow permissions: Read and write.
